@@ -1,0 +1,154 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Express Application/API powered by API Gateway and Lambda
+Parameters:
+  DomainName:
+    Type: String
+    Description: API Domain name
+    Default: '' # Fill if you want to use a custom domain already registered in Route53
+  DbUser:
+    Type: String
+    Default: 'postgres'
+  DbPassword:
+    NoEcho: true
+    Type: String
+    Default: 'supercrazysecretpassword'
+  # Fill this in with the AWS defaults or create a new VPC
+  # Ref: https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#SecurityGroups:
+  # Ref: https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:
+  SecurityGroups:
+    Type: String
+    Default: sg-eee64289
+  Subnets:
+    Type: String
+    Default: subnet-45febd1c,subnet-22d6fe55,subnet-f45fc591,subnet-c07502eb,subnet-6661795c,subnet-0bc24307
+
+
+Globals:
+  Function:
+    Tags:
+      hello: true
+    Environment:
+      Variables:
+        DB_URI: !Join ['', [!Ref DbUser, ':', !Ref DbPassword, '@(', !GetAtt DatabaseCluster.Endpoint.Address, ':', !GetAtt DatabaseCluster.Endpoint.Port, ')/mydb']]
+
+
+Conditions:
+  UseDomainName:
+    !Not
+      - !Equals
+        - !Ref DomainName
+        - ''
+
+Resources:
+  #############
+  # Webserver
+  #############
+  ExpressApi:
+    Type: AWS::Serverless::HttpApi
+  ExpressLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: main.handler
+      MemorySize: 1024
+      Runtime: nodejs14.x
+      Timeout: 30
+      VpcConfig:
+        SecurityGroupIds: !Split [ ',',  !Ref SecurityGroups] 
+        SubnetIds: !Split [ ',',  !Ref Subnets] 
+      Events:
+        ProxyApiRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ExpressApi
+
+  ###########
+  # Custom domain mapping if route53 domain name is supplied
+  ###########
+  ApiCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Condition: UseDomainName
+    Properties:
+      DomainName: !Sub '*.${DomainName}'
+      DomainValidationOptions:
+        - DomainName: !Sub '*.${DomainName}'
+          ValidationDomain: !Ref DomainName
+      SubjectAlternativeNames:
+        - !Ref DomainName
+  ApiDomainName:
+    Type: 'AWS::ApiGateway::DomainName'
+    Condition: UseDomainName
+    Properties:
+      CertificateArn: !Ref ApiCertificate
+      DomainName: !Ref DomainName
+  ApiBasePathMapping:
+    Type: 'AWS::ApiGateway::BasePathMapping'
+    Condition: UseDomainName
+    Properties:
+      RestApiId: !Ref ExpressApi
+      DomainName: !Ref ApiDomainName
+      BasePath: '(none)'
+      Stage: prod
+  Route53HostedZone:
+    Type: AWS::Route53::HostedZone
+    Condition: UseDomainName
+    Properties:
+      Name: !Ref DomainName
+  ApiRoute53RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Condition: UseDomainName
+    Properties:
+      HostedZoneId: !Ref Route53HostedZone
+      RecordSets:
+        - Name: !Sub ${DomainName}.
+          Type: A
+          AliasTarget:
+            EvaluateTargetHealth: false
+            HostedZoneId: !GetAtt ApiDomainName.DistributionHostedZoneId
+            DNSName: !GetAtt ApiDomainName.DistributionDomainName
+
+
+  #################
+  # DB
+  #################
+  DatabaseSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: CloudFormation managed DB subnet group.
+      SubnetIds: !Split [ ',',  !Ref Subnets] 
+      # SubnetIds:
+      #   - !Ref Subnet1
+      #   - !Ref Subnet2
+  DatabaseCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      MasterUsername: !Ref DbUser
+      MasterUserPassword: !Ref DbPassword
+      Engine: aurora-postgresql
+      DBSubnetGroupName: !Ref DatabaseSubnetGroup
+      EngineMode: serverless
+      ScalingConfiguration:
+        AutoPause: true
+        MaxCapacity: 4
+        MinCapacity: 2
+        SecondsUntilAutoPause: 300
+
+Outputs:
+  LambdaFunctionConsoleUrl:
+    Description: Console URL for the Lambda Function.
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/${ExpressLambdaFunction}
+
+  ApiGatewayApiConsoleUrl:
+    Description: Console URL for the API Gateway API's Stage.
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/apis/${ExpressApi}/stages/prod
+
+  ApiUrl:
+    Description: Invoke URL for your API. Clicking this link will perform a GET request
+      on the root resource of your API.
+    Value: !Sub https://${ExpressApi}.execute-api.${AWS::Region}.amazonaws.com/
+
+  LambdaFunctionName:
+    Description: Name of the Serverless Express Lambda Function
+    Value: !Ref ExpressLambdaFunction

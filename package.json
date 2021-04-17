@@ -1,0 +1,38 @@
+{
+  "name": "@bdombro/serverless-express-example",
+  "version": "2.1.1",
+  "description": "Example application for running a Node Express app on AWS Lambda using Amazon API Gateway.",
+  "main": "lambda.js",
+  "license": "ISC",
+  "config": {
+    "configBucket": "serverless-express-example-edge1",
+    "region": "us-east-1",
+    "stackName": "fullstack1",
+    "lambdaName": "(copy the `LambdalambdaName` from the CloudFormation Outputs)",
+    "domain:comment": "Fill if you want to use a custom domain already registered in Route53 and have it mapped to this stack",
+    "domain": ""
+  },
+  "scripts": {
+    "start": "node server.js",
+    "build": "webpack-cli",
+    "stack:deploy": "run-s stack:config:upsert-bucket build stack:deploy:package stack:deploy:template",
+    "stack:deploy:package": "cross-var aws cloudformation package --template ./sam-template.yaml --s3-bucket $npm_package_config_configBucket --output-template sam-template.packaged.yaml --region $npm_package_config_region",
+    "stack:deploy:template": "cross-var aws cloudformation deploy --template-file sam-template.packaged.yaml --stack-name $npm_package_config_stackName --capabilities CAPABILITY_IAM --region $npm_package_config_region --parameter-overrides DomainName=$npm_package_config_domain",
+    "stack:lambda-invoke": "cross-var aws lambda invoke --function-name $npm_package_config_lambdaName --region $npm_package_config_region --payload file://tests/mock-api-gateway-event.json lambda-invoke-response.json && cat lambda-invoke-response.json",
+    "stack:delete": "cross-var aws cloudformation delete-stack --stack-name $npm_package_config_stackName --region $npm_package_config_region",
+    "stack:config:upsert-bucket": "cross-var aws s3api get-bucket-location --bucket $npm_package_config_configBucket --region $npm_package_config_region || cross-var aws s3 mb s3://$npm_package_config_configBucket --region $npm_package_config_region",
+    "stack:config:delete-bucket": "cross-var aws s3 rb s3://$npm_package_config_configBucket --region $npm_package_config_region"
+  },
+  "dependencies": {
+    "@vendia/serverless-express": "^4.3.0",
+    "express": "^4.15.2"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^7.0.0",
+    "cross-var": "^1.1.0",
+    "npm-run-all": "^4.1.5",
+    "source-map-support": "^0.5.19",
+    "webpack": "^5.21.2",
+    "webpack-cli": "^4.5.0"
+  }
+}
