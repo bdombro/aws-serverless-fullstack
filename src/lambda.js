@@ -1,5 +1,5 @@
 require('source-map-support/register')
-const serverlessExpress = require('@vendia/serverless-express')
+const awsLambdaFastify = require('aws-lambda-fastify')
 const app = require('./app')
 
-exports.handler = serverlessExpress({ app })
+exports.handler = awsLambdaFastify(app)

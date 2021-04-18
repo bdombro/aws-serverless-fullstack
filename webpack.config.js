@@ -13,10 +13,10 @@ module.exports = {
     libraryTarget: 'commonjs2'
   },
   plugins: [
-    new CopyPlugin({
-      patterns: [
-        { from: './src/vendia-logo.png' }
-      ]
-    })
+    // new CopyPlugin({
+    //   patterns: [
+    //     { from: './src/vendia-logo.png' }
+    //   ]
+    // })
   ]
 }

@@ -1,5 +1,9 @@
-const app = require('./src/app')
-const port = 3002
+const 
+  fastify = require('./src/app')
+  ,address = process.env.ADDRESS || '0.0.0.0'
+  ,port = process.env.PORT || 8080
 
-app.listen(port)
-console.info(`listening on http://localhost:${port}`)
+fastify.listen(port, address, (err, address) => {
+  if (err) throw err
+  fastify.log.info(`server listening on ${address}`)
+})
