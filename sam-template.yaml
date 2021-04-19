@@ -1,5 +1,5 @@
 ---
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless NodeJS Application/API powered by API Gateway and Lambda
 Parameters:
@@ -55,7 +55,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
         - Effect: Allow
           Principal:
@@ -65,14 +65,14 @@ Resources:
       Policies: 
         - PolicyName: LambdaToCloudWatchLogs
           PolicyDocument: 
-            Version: "2012-10-17"
+            Version: 2012-10-17
             Statement: 
               - Effect: Allow
                 Action: [logs:*]
                 Resource: [arn:aws:logs:*:*:*]
         - PolicyName: LambdaToRDSAuroraServerless
           PolicyDocument: 
-            Version: "2012-10-17"
+            Version: 2012-10-17
             Statement: 
               - Effect: Allow
                 Action: 
@@ -87,7 +87,7 @@ Resources:
                   - !Sub arn:aws:rds:*:*:cluster:${DbCluster}:*
         - PolicyName: LambdaToAWSSecrets
           PolicyDocument: 
-            Version: "2012-10-17"
+            Version: 2012-10-17
             Statement: 
               - Effect: Allow
                 Action: secretsmanager:GetSecretValue
@@ -105,9 +105,9 @@ Resources:
     Properties:
       CodeUri: ./dist
       Handler: main.handler
-      MemorySize: 1024
+      MemorySize: 128
       Runtime: nodejs14.x
-      Timeout: 30
+      Timeout: 100
       Events:
         ProxyApiRoot:
           Type: HttpApi
