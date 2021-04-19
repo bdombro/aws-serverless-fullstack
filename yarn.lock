@@ -307,6 +307,21 @@ aws-lambda-fastify@^1.4.4:
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/aws-lambda-fastify/-/aws-lambda-fastify-1.4.4.tgz#4ee8c823f9c271ff9944be4d8639d3ba1d87dda6"
   integrity sha1-TujII/nCcf+ZRL5NhjnTuh2H3aY=
 
+aws-sdk@^2.888.0:
+  version "2.888.0"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/aws-sdk/-/aws-sdk-2.888.0.tgz#7b1c0c90b665a40623c0291e3945b7fc87a9a530"
+  integrity sha1-exwMkLZlpAYjwCkeOUW3/IeppTA=
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
 babel-code-frame@^6.26.0:
   version "6.26.0"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/babel-code-frame/-/babel-code-frame-6.26.0.tgz#63fd43f7dc1e3bb7ce35947db8fe369a3f58c74b"
@@ -991,6 +1006,11 @@ balanced-match@^1.0.0:
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha1-6D46fj8wCzTLnYf2FfoMvzV2kO4=
 
+base64-js@^1.0.2:
+  version "1.5.1"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
+  integrity sha1-GxtEAWClv3rUC2UPCVljSBkDkwo=
+
 big.js@^5.2.2:
   version "5.2.2"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
@@ -1026,6 +1046,15 @@ buffer-from@^1.0.0:
   version "1.1.1"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/buffer-from/-/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
   integrity sha1-MnE7wCj3XAL9txDXx7zsHyxgcO8=
+
+buffer@4.9.2:
+  version "4.9.2"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/buffer/-/buffer-4.9.2.tgz#230ead344002988644841ab0244af8c44bbe3ef8"
+  integrity sha1-Iw6tNEACmIZEhBqwJEr4xEu+Pvg=
+  dependencies:
+    base64-js "^1.0.2"
+    ieee754 "^1.1.4"
+    isarray "^1.0.0"
 
 call-bind@^1.0.0, call-bind@^1.0.2:
   version "1.0.2"
@@ -1176,6 +1205,13 @@ cross-var@^1.1.0:
     babel-register "^6.18.0"
     cross-spawn "^5.0.1"
     exit "^0.1.2"
+
+data-api-client@^1.2.0:
+  version "1.2.0"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/data-api-client/-/data-api-client-1.2.0.tgz#3c07bc751f59c7e1ea97a18814b18dd762213fb8"
+  integrity sha1-PAe8dR9Zx+Hql6GIFLGN12IhP7g=
+  dependencies:
+    sqlstring "^2.3.2"
 
 debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
@@ -1329,6 +1365,11 @@ esutils@^2.0.2:
   version "2.0.3"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha1-dNLrTeC42hKTcRkQ1Qd1ubcQ72Q=
+
+events@1.1.1:
+  version "1.1.1"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
+  integrity sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
 
 events@^3.2.0:
   version "3.3.0"
@@ -1581,6 +1622,16 @@ human-signals@^2.1.0:
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha1-3JH8ukLk0G5Kuu0zs+ejwC9RTqA=
 
+ieee754@1.1.13:
+  version "1.1.13"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
+  integrity sha1-7BaFWOlaoYH9h9N/VcMrvLZwi4Q=
+
+ieee754@^1.1.4:
+  version "1.2.1"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
+  integrity sha1-jrehCmP/8l0VpXsAFYbRd9Gw01I=
+
 ignore@^5.1.4:
   version "5.1.8"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/ignore/-/ignore-5.1.8.tgz#f150a8b50a34289b33e22f5889abd4d8016f0e57"
@@ -1714,6 +1765,11 @@ is-symbol@^1.0.2, is-symbol@^1.0.3:
   dependencies:
     has-symbols "^1.0.1"
 
+isarray@^1.0.0:
+  version "1.0.0"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
+  integrity sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
+
 isexe@^2.0.0:
   version "2.0.0"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
@@ -1732,6 +1788,11 @@ jest-worker@^26.6.2:
     "@types/node" "*"
     merge-stream "^2.0.0"
     supports-color "^7.0.0"
+
+jmespath@0.15.0:
+  version "0.15.0"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
+  integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
 
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
@@ -2127,10 +2188,20 @@ pseudomap@^1.0.2:
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
   integrity sha1-8FKijacOYYkX7wqKw0wa5aaChrM=
 
+punycode@1.3.2:
+  version "1.3.2"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/punycode/-/punycode-1.3.2.tgz#9653a036fb7c1ee42342f2325cceefea3926c48d"
+  integrity sha1-llOgNvt8HuQjQvIyXM7v6jkmxI0=
+
 punycode@^2.1.0:
   version "2.1.1"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha1-tYsBCsQMIsVldhbI0sLALHv0eew=
+
+querystring@0.2.0:
+  version "0.2.0"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
+  integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
 
 queue-microtask@^1.1.2, queue-microtask@^1.2.2:
   version "1.2.3"
@@ -2279,6 +2350,16 @@ safe-regex2@^2.0.0:
   integrity sha1-sodSTDl8eimURwNn4BheGRax9bk=
   dependencies:
     ret "~0.2.0"
+
+sax@1.2.1:
+  version "1.2.1"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/sax/-/sax-1.2.1.tgz#7b8e656190b228e81a66aea748480d828cd2d37a"
+  integrity sha1-e45lYZCyKOgaZq6nSEgNgozS03o=
+
+sax@>=0.6.0:
+  version "1.2.4"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
+  integrity sha1-KBYjTiN4vdxOU1T6tcqold9xANk=
 
 schema-utils@^3.0.0:
   version "3.0.0"
@@ -2443,6 +2524,11 @@ spdx-license-ids@^3.0.0:
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/spdx-license-ids/-/spdx-license-ids-3.0.7.tgz#e9c18a410e5ed7e12442a549fbd8afa767038d65"
   integrity sha1-6cGKQQ5e1+EkQqVJ+9ivp2cDjWU=
 
+sqlstring@^2.3.2:
+  version "2.3.2"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/sqlstring/-/sqlstring-2.3.2.tgz#cdae7169389a1375b18e885f2e60b3e460809514"
+  integrity sha1-za5xaTiaE3WxjohfLmCz5GCAlRQ=
+
 string-similarity@^4.0.1:
   version "4.0.4"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/string-similarity/-/string-similarity-4.0.4.tgz#42d01ab0b34660ea8a018da8f56a3309bb8b2a5b"
@@ -2581,10 +2667,23 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
+url@0.10.3:
+  version "0.10.3"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/url/-/url-0.10.3.tgz#021e4d9c7705f21bbf37d03ceb58767402774c64"
+  integrity sha1-Ah5NnHcF8hu/N9A861h2dAJ3TGQ=
+  dependencies:
+    punycode "1.3.2"
+    querystring "0.2.0"
+
 util-deprecate@^1.0.1:
   version "1.0.2"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
+
+uuid@3.3.2:
+  version "3.3.2"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
+  integrity sha1-G0r0lV6zB3xQHCOHL8ZROBFYcTE=
 
 v8-compile-cache@^2.2.0:
   version "2.3.0"
@@ -2701,6 +2800,19 @@ wildcard@^2.0.0:
   version "2.0.0"
   resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/wildcard/-/wildcard-2.0.0.tgz#a77d20e5200c6faaac979e4b3aadc7b3dd7f8fec"
   integrity sha1-p30g5SAMb6qsl55LOq3Hs91/j+w=
+
+xml2js@0.4.19:
+  version "0.4.19"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/xml2js/-/xml2js-0.4.19.tgz#686c20f213209e94abf0d1bcf1efaa291c7827a7"
+  integrity sha1-aGwg8hMgnpSr8NG88e+qKRx4J6c=
+  dependencies:
+    sax ">=0.6.0"
+    xmlbuilder "~9.0.1"
+
+xmlbuilder@~9.0.1:
+  version "9.0.7"
+  resolved "https://artifacts.ua-ecm.com:443/artifactory/api/npm/ua-npm-master/xmlbuilder/-/xmlbuilder-9.0.7.tgz#132ee63d2ec5565c557e20f4c22df9aca686b10d"
+  integrity sha1-Ey7mPS7FVlxVfiD0wi35rKaGsQ0=
 
 yallist@^2.1.2:
   version "2.1.2"

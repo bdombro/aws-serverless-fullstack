@@ -1,53 +1,106 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Serverless Express Application/API powered by API Gateway and Lambda
+Description: Serverless NodeJS Application/API powered by API Gateway and Lambda
 Parameters:
   DomainName:
     Type: String
     Description: API Domain name
     Default: '' # Fill if you want to use a custom domain already registered in Route53
+  DbName:
+    Type: String
+    Default: fullstack
   DbUser:
     Type: String
-    Default: 'postgres'
+    Default: admin
   DbPassword:
     NoEcho: true
     Type: String
-    Default: 'supercrazysecretpassword'
-  # Fill this in with the AWS defaults or create a new VPC
-  # Ref: https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#SecurityGroups:
-  # Ref: https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:
-  SecurityGroups:
-    Type: String
-    Default: sg-eee64289
-  Subnets:
-    Type: String
-    Default: subnet-45febd1c,subnet-22d6fe55,subnet-f45fc591,subnet-c07502eb,subnet-6661795c,subnet-0bc24307
-
-
-Globals:
-  Function:
-    Tags:
-      hello: true
-    Environment:
-      Variables:
-        DB_URI: !Join ['', [!Ref DbUser, ':', !Ref DbPassword, '@(', !GetAtt DatabaseCluster.Endpoint.Address, ':', !GetAtt DatabaseCluster.Endpoint.Port, ')/mydb']]
-
+    Default: supercrazysecretpassword
 
 Conditions:
-  UseDomainName:
-    !Not
-      - !Equals
-        - !Ref DomainName
-        - ''
+  UseDomainName: !Not [!Equals [!Ref DomainName, '']]
 
 Resources:
+  #################
+  # DB
+  #################
+  DbCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      DatabaseName: !Ref DbName
+      MasterUsername: !Ref DbUser
+      MasterUserPassword: !Ref DbPassword
+      Engine: aurora-mysql
+      EngineMode: serverless
+      EngineVersion: 5.7.mysql_aurora.2.09.2 # find more with aws rds describe-db-engine-versions --engine aurora-mysql --query "DBEngineVersions[].EngineVersion"
+      EnableHttpEndpoint: true
+      ScalingConfiguration:
+        AutoPause: true
+        MaxCapacity: 4
+        MinCapacity: 2
+        SecondsUntilAutoPause: 300
+  DbSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub ${AWS::StackName}-DbSecret
+      Description: This contains the RDS Master user credentials for RDS Aurora Serverless Cluster
+      SecretString: 
+        !Sub |
+          {
+            "username": "${DbUser}",
+            "password": "${DbPassword}"
+          }
+  LambdaRole: 
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [lambda.amazonaws.com]
+          Action: [sts:AssumeRole]
+      Path: "/"
+      Policies: 
+        - PolicyName: LambdaToCloudWatchLogs
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: Allow
+                Action: [logs:*]
+                Resource: [arn:aws:logs:*:*:*]
+        - PolicyName: LambdaToRDSAuroraServerless
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: Allow
+                Action: 
+                  - rds-data:ExecuteSql
+                  - rds-data:ExecuteStatement
+                  - rds-data:BatchExecuteStatement
+                  - rds-data:BeginTransaction
+                  - rds-data:RollbackTransaction
+                  - rds-data:CommitTransaction
+                Resource: 
+                  - !Sub arn:aws:rds:*:*:cluster:${DbCluster}
+                  - !Sub arn:aws:rds:*:*:cluster:${DbCluster}:*
+        - PolicyName: LambdaToAWSSecrets
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource:
+                  - !Ref DbSecret
+                  - !Sub ${DbSecret}:*
+
   #############
-  # Webserver
+  # API
   #############
-  ExpressApi:
+  ApiGateway:
     Type: AWS::Serverless::HttpApi
-  ExpressLambdaFunction:
+  ApiLambda:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./dist
@@ -55,17 +108,22 @@ Resources:
       MemorySize: 1024
       Runtime: nodejs14.x
       Timeout: 30
-      VpcConfig:
-        SecurityGroupIds: !Split [ ',',  !Ref SecurityGroups] 
-        SubnetIds: !Split [ ',',  !Ref Subnets] 
       Events:
         ProxyApiRoot:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ExpressApi
+            ApiId: !Ref ApiGateway
+      Environment:
+        Variables:
+          dbName: !Ref DbName
+          dbArn: !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DbCluster}
+          dbSecretArn: !Ref DbSecret
+      Role: 
+        Fn::GetAtt: [LambdaRole, Arn]
 
   ###########
   # Custom domain mapping if route53 domain name is supplied
+  # This section is untested
   ###########
   ApiCertificate:
     Type: 'AWS::CertificateManager::Certificate'
@@ -87,7 +145,7 @@ Resources:
     Type: 'AWS::ApiGateway::BasePathMapping'
     Condition: UseDomainName
     Properties:
-      RestApiId: !Ref ExpressApi
+      RestApiId: !Ref ApiGateway
       DomainName: !Ref ApiDomainName
       BasePath: '(none)'
       Stage: prod
@@ -110,45 +168,30 @@ Resources:
             DNSName: !GetAtt ApiDomainName.DistributionDomainName
 
 
-  #################
-  # DB
-  #################
-  DatabaseSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: CloudFormation managed DB subnet group.
-      SubnetIds: !Split [ ',',  !Ref Subnets] 
-      # SubnetIds:
-      #   - !Ref Subnet1
-      #   - !Ref Subnet2
-  DatabaseCluster:
-    Type: AWS::RDS::DBCluster
-    Properties:
-      MasterUsername: !Ref DbUser
-      MasterUserPassword: !Ref DbPassword
-      Engine: aurora-postgresql
-      DBSubnetGroupName: !Ref DatabaseSubnetGroup
-      EngineMode: serverless
-      ScalingConfiguration:
-        AutoPause: true
-        MaxCapacity: 4
-        MinCapacity: 2
-        SecondsUntilAutoPause: 300
-
 Outputs:
   LambdaFunctionConsoleUrl:
     Description: Console URL for the Lambda Function.
-    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/${ExpressLambdaFunction}
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/${ApiLambda}
 
   ApiGatewayApiConsoleUrl:
     Description: Console URL for the API Gateway API's Stage.
-    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/apis/${ExpressApi}/stages/prod
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/apis/${ApiGateway}/stages/prod
 
   ApiUrl:
     Description: Invoke URL for your API. Clicking this link will perform a GET request
       on the root resource of your API.
-    Value: !Sub https://${ExpressApi}.execute-api.${AWS::Region}.amazonaws.com/
+    Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/
 
   LambdaFunctionName:
-    Description: Name of the Serverless Express Lambda Function
-    Value: !Ref ExpressLambdaFunction
+    Description: Name of the Api Lambda Function
+    Value: !Ref ApiLambda
+
+  DatabaseName:
+    Value: !Ref DbName
+    Description: Aurora Serverless MySQL Database
+  SecretsArn:
+    Value: !Ref DbSecret
+    Description: AWS Secrets Arn 
+  DBClusterArn:
+    Value: !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DbCluster}
+    Description: AWS Secrets Arn
