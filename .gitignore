@@ -2,11 +2,5 @@ node_modules
 npm-debug.log
 .DS_Store
 .env
-coverage
-sam-template.packaged.yaml
-vendia-serverless-express-*.tgz
-dist/
-examples/nextjs
-typescript-out
-.build
-.serverless
+.history
+.aws-sam

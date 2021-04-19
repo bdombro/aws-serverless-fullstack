@@ -2,14 +2,11 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless NodeJS Application/API powered by API Gateway and Lambda
+
 Parameters:
-  DomainName:
-    Type: String
-    Description: API Domain name
-    Default: '' # Fill if you want to use a custom domain already registered in Route53
   DbName:
     Type: String
-    Default: fullstack
+    Default: public
   DbUser:
     Type: String
     Default: admin
@@ -17,9 +14,6 @@ Parameters:
     NoEcho: true
     Type: String
     Default: supercrazysecretpassword
-
-Conditions:
-  UseDomainName: !Not [!Equals [!Ref DomainName, '']]
 
 Resources:
   #################
@@ -103,11 +97,12 @@ Resources:
   ApiLambda:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./dist
-      Handler: main.handler
+      # CodeUri: ./dist
+      # Handler: main.handler
+      Handler: src/lambda.handler
       MemorySize: 128
       Runtime: nodejs14.x
-      Timeout: 100
+      Timeout: 300
       Events:
         ProxyApiRoot:
           Type: HttpApi
@@ -120,53 +115,6 @@ Resources:
           dbSecretArn: !Ref DbSecret
       Role: 
         Fn::GetAtt: [LambdaRole, Arn]
-
-  ###########
-  # Custom domain mapping if route53 domain name is supplied
-  # This section is untested
-  ###########
-  ApiCertificate:
-    Type: 'AWS::CertificateManager::Certificate'
-    Condition: UseDomainName
-    Properties:
-      DomainName: !Sub '*.${DomainName}'
-      DomainValidationOptions:
-        - DomainName: !Sub '*.${DomainName}'
-          ValidationDomain: !Ref DomainName
-      SubjectAlternativeNames:
-        - !Ref DomainName
-  ApiDomainName:
-    Type: 'AWS::ApiGateway::DomainName'
-    Condition: UseDomainName
-    Properties:
-      CertificateArn: !Ref ApiCertificate
-      DomainName: !Ref DomainName
-  ApiBasePathMapping:
-    Type: 'AWS::ApiGateway::BasePathMapping'
-    Condition: UseDomainName
-    Properties:
-      RestApiId: !Ref ApiGateway
-      DomainName: !Ref ApiDomainName
-      BasePath: '(none)'
-      Stage: prod
-  Route53HostedZone:
-    Type: AWS::Route53::HostedZone
-    Condition: UseDomainName
-    Properties:
-      Name: !Ref DomainName
-  ApiRoute53RecordSetGroup:
-    Type: AWS::Route53::RecordSetGroup
-    Condition: UseDomainName
-    Properties:
-      HostedZoneId: !Ref Route53HostedZone
-      RecordSets:
-        - Name: !Sub ${DomainName}.
-          Type: A
-          AliasTarget:
-            EvaluateTargetHealth: false
-            HostedZoneId: !GetAtt ApiDomainName.DistributionHostedZoneId
-            DNSName: !GetAtt ApiDomainName.DistributionDomainName
-
 
 Outputs:
   LambdaFunctionConsoleUrl:
