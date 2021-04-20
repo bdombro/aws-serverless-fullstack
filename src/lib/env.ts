@@ -1,7 +1,7 @@
 /**
  * An interface for isomorphic env variable access
  */
-import { pick } from "./objects"
+import { pick } from './objects'
 
 const pe = process.env as Record<string, string>
 
@@ -18,12 +18,12 @@ const currentEnv = isProd ? lambdaEnv : localEnv
 // @ts-ignore: env checker uncertainty
 const missing = currentVars.filter(v => !currentEnv[v])
 if (missing.length)
-  throw new Error('Env is missing ' + missing)
+	throw new Error('Env is missing ' + missing)
 
 export default {
-  isProd,
-  ...lambdaEnv,
-  ...localEnv,
+	isProd,
+	...lambdaEnv,
+	...localEnv,
 }
 
 

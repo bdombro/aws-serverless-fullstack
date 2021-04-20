@@ -5,17 +5,17 @@ import * as AWS from 'aws-sdk'
 import * as fs from 'fs'
 import * as path from 'path'
 
-import env from "./env"
+import env from './env'
 
 export default {
-  async put(key: string, data: string | Buffer, contentType: string) {
-    const _put = env.isProd ? s3Put : localPut
+	async put(key: string, data: string | Buffer, contentType: string) {
+		const _put = env.isProd ? s3Put : localPut
 		return _put(key, data, contentType)
-  },
-  async get(key: string) {
+	},
+	async get(key: string) {
 		const _get = env.isProd ? s3Get : localGet
 		return _get(key)
-  }
+	}
 }
 
 const 
@@ -24,11 +24,11 @@ const
 
 async function localPut(key: string, data: any, contentType: string) {
 	const 
-			filePath = tmpDir + key
-			,fileDir = path.dirname(filePath)
-		await fs.promises.mkdir(fileDir, {recursive: true})
-		await fs.promises.writeFile(filePath + '.meta', JSON.stringify({key, contentType, createdAt: new Date().toISOString()}, null, 2))
-		await fs.promises.writeFile(filePath, data)
+		filePath = tmpDir + key
+		,fileDir = path.dirname(filePath)
+	await fs.promises.mkdir(fileDir, {recursive: true})
+	await fs.promises.writeFile(filePath + '.meta', JSON.stringify({key, contentType, createdAt: new Date().toISOString()}, null, 2))
+	await fs.promises.writeFile(filePath, data)
 }
 async function localGet(key: string): Promise<GetResult> {
 	const 
@@ -70,7 +70,7 @@ async function s3Get(key: string): Promise<GetResult> {
 		}
 	} catch(err) {
 		// S3 403s for not-founds, so err isn't helpful.
-		throw Object.assign(new Error('ENOENT: File not found'), {code: "ENOENT"})
+		throw Object.assign(new Error('ENOENT: File not found'), {code: 'ENOENT'})
 	}
 }
 

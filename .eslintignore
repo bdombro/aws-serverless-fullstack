@@ -1,0 +1,5 @@
+coverage/
+contrib/
+reports/
+node_modules/
+./*.js

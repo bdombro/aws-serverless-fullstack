@@ -2,6 +2,8 @@ node_modules
 npm-debug.log
 .DS_Store
 .env
+.vscode
 .history
 .aws-sam
 fileStorage
+.eslintcache
