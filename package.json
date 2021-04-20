@@ -1,19 +1,35 @@
 {
   "name": "@bdombro/serverless-fullstack",
-  "version": "2.1.1",
-  "description": "Example application for running a Node API app on AWS Lambda using Amazon API Gateway.",
+  "version": "0.5.0",
+  "description": "Example application for running a fullstack, serverless Node API app on AWS",
   "main": "src/server.js",
   "license": "ISC",
+  "config": {
+    "DEV_ADDRESS": "0.0.0.0",
+    "DEV_PORT": "3000",
+		"DEV_cookieSecret": "serverlesssupersecretcookiesecret",
+    "DEV_dbHost": "0.0.0.0",
+    "DEV_dbPort": "3306",
+    "DEV_dbName": "public",
+    "DEV_dbUser": "admin",
+    "DEV_dbPassword": "supercrazysecretpassword"
+  },
   "scripts": {
-    "build": "tsc && sam build && tsc -b --clean",
+    "build": "npm run lint && tsc && sam build && tsc -b --clean",
     "deploy": "sam deploy",
-    "dev": "dbName=public dbHost=0.0.0.0 dbUser=admin dbPassword=supercrazysecretpassword ts-node-dev --transpile-only src/server.ts",
-    "dev:mysql": "docker run -it --rm --name serverless-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=supercrazysecretpassword -e MYSQL_DATABASE=public -e MYSQL_USER=admin -e MYSQL_PASSWORD=supercrazysecretpassword mysql:5.7",
-    "lint": "eslint --cache --ext .ts,.tsx src"
+    "dev": "ADDRESS=$npm_package_config_DEV_ADDRESS PORT=$npm_package_config_DEV_PORT cookieSecret=$npm_package_config_DEV_cookieSecret dbName=$npm_package_config_DEV_dbName dbHost=$npm_package_config_DEV_dbHost dbUser=$npm_package_config_DEV_dbUser dbPassword=$npm_package_config_DEV_dbPassword ts-node-dev --transpile-only src/server.ts",
+    "dev:mysql": "docker run -d --rm --name serverless-mysql -p 3306:$npm_package_config_DEV_dbPort -e MYSQL_ROOT_PASSWORD=$npm_package_config_DEV_dbPassword -e MYSQL_DATABASE=$npm_package_config_DEV_dbName -e MYSQL_USER=$npm_package_config_DEV_dbUser -e MYSQL_PASSWORD=$npm_package_config_DEV_dbPassword mysql:5.7",
+    "lint": "eslint --cache --ext .ts,.tsx src",
+		"logs": "sam logs -n ApiLambda --stack-name serverless-fullstack2"
   },
   "files": [
     "src"
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && tsc --noEmit"
+    }
+  },
   "dependencies": {
     "aws-lambda-fastify": "^1.4.4",
     "aws-sdk": "^2.888.0",
@@ -32,6 +48,7 @@
     "@typescript-eslint/parser": "^4.8.1",
     "eslint": "^7.18.0",
     "eslint-plugin-simple-import-sort": "^6.0.1",
+    "husky": "^4.3.8",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.4"
   },

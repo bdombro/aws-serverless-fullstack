@@ -14,6 +14,10 @@ Parameters:
     NoEcho: true
     Type: String
     Default: supercrazysecretpassword
+  CookieSecret:
+    NoEcho: true
+    Type: String
+    Default: serverlesssupersecretcookiesecret
 
 Resources:
 
@@ -31,9 +35,9 @@ Resources:
       EngineVersion: 5.7.mysql_aurora.2.09.2 # find more with aws rds describe-db-engine-versions --engine aurora-mysql --query "DBEngineVersions[].EngineVersion"
       EnableHttpEndpoint: true
       ScalingConfiguration:
-        AutoPause: true
         MaxCapacity: 4
-        MinCapacity: 2
+        MinCapacity: 1
+        AutoPause: true
         SecondsUntilAutoPause: 300
   DbSecret:
     Type: AWS::SecretsManager::Secret
@@ -119,7 +123,7 @@ Resources:
       Handler: src/lambda.handler
       MemorySize: 256
       Runtime: nodejs14.x
-      Timeout: 30
+      Timeout: 60 # Max=900; API Gateway times out at 28s, so no point in making much higher
       # Tracing: Active # TODO: Get this working
       Events:
         ProxyApiRoot:
@@ -129,6 +133,7 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: production
+          cookieSecret: !Ref CookieSecret
           dbName: !Ref DbName
           dbArn: !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DbCluster}
           dbSecretArn: !Ref DbSecret

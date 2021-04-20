@@ -3,22 +3,23 @@ const awsLambdaFastify = require('aws-lambda-fastify')
 import app from './app'
 
 exports.handler = awsLambdaFastify(app, {
-	binaryMimeTypes: getBinMemes(),
+	// Set all contenttyps to be treated as binary, so that gzip compression works.
+	binaryMimeTypes: commonContentTypes(),
 })
 
 
-function getBinMemes() {
+function commonContentTypes() {
 	return [
 		'application/epub+zip',
 		'application/gzip',
 		'application/java-archive',
-		// "application/json",
-		// "application/ld+json",
+		'application/json',
+		'application/ld+json',
 		'application/msword',
 		'application/octet-stream',
 		'application/ogg',
 		'application/pdf',
-		// "application/rtf",
+		'application/rtf',
 		'application/vnd.amazon.ebook',
 		'application/vnd.apple.installer+xml',
 		'application/vnd.mozilla.xul+xml',
@@ -27,7 +28,7 @@ function getBinMemes() {
 		'application/vnd.ms-powerpoint',
 		'application/vnd.oasis.opendocument.presentation',
 		'application/vnd.oasis.opendocument.spreadsheet',
-		// "application/vnd.oasis.opendocument.text",
+		'application/vnd.oasis.opendocument.text',
 		'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -44,8 +45,8 @@ function getBinMemes() {
 		'application/x-sh',
 		'application/x-shockwave-flash',
 		'application/x-tar',
-		// "application/xhtml+xml",
-		// "application/xml",
+		'application/xhtml+xml',
+		'application/xml',
 		'application/zip',
 		'audio/aac',
 		'audio/midi',
@@ -69,13 +70,13 @@ function getBinMemes() {
 		'image/tiff',
 		'image/vnd.microsoft.icon',
 		'image/webp',
-		// "text/calendar",
-		// "text/css",
-		// "text/csv",
-		// "text/html",
-		// "text/javascript",
-		// "text/javascript",
-		// "text/plain",
+		'text/calendar',
+		'text/css',
+		'text/csv',
+		'text/html',
+		'text/javascript',
+		'text/javascript',
+		'text/plain',
 		'video/mp2t',
 		'video/mp4',
 		'video/mpeg',

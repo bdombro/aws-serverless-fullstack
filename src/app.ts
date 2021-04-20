@@ -17,11 +17,20 @@ import { ForbiddenError, NotFoundError, RequiredError, ValidationErrorSet, Value
 
 const 
 	prefix = '/api'
-	,buildRoot = path.join(__dirname, '../web-build')
-	,notFoundHtml = fs.readFileSync(path.join(buildRoot, '/not-found.html'))
-	,secrets = (process.env.SECRET || 'serverlesssupersecretcookiesecret').split(',')
+	,htmlPath = path.join(__dirname, '/html')
+	,notFoundHtml = fs.readFileSync(path.join(htmlPath, '/not-found.html'))
+	,isProd = process.env.NODE_ENV === 'production'
+	,secrets = (process.env.cookieSecret || 'serverlesssupersecretcookiesecret').split(',')
 	,app = fastify({
-		logger: true
+		logger: true,
+		...!isProd ? {
+			http2: true,
+			https: { 
+				allowHTTP1: true, 
+				key: fs.readFileSync(__dirname + '/../snowpack.key', 'utf8'), 
+				cert: fs.readFileSync(__dirname + '/../snowpack.crt', 'utf8'),
+			},
+		} : {}
 	})
 
 app.register(helmetPlugin, { 
@@ -33,14 +42,12 @@ app.register(helmetPlugin, {
 		},
 	},
 })
-app.register(compressPlugin)
+app.register(compressPlugin, { threshold: 800 }) // default = 1024
 app.register(cookiePlugin, { secret: secrets })
-app.register(fileUploadPlugin, {
-	limits: { fileSize: 50 * 1024 * 1024 },
-})
+app.register(fileUploadPlugin, { limits: { fileSize: 50 * 1024 * 1024 }})
  
 
-app.register(staticPlugin, { root: buildRoot })
+app.register(staticPlugin, { root: htmlPath })
 
 app.get('/env', (request, reply) => {
 	reply.send(env)

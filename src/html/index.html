@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>SERVERLESS-FULLSTACK</title>
+	<style>
+		body { width: 650px; margin: auto }
+		h1 { text-align: center }
+		.resources>h2 { margin-bottom: 0 }
+		.resource>h3,.resource>p { display: inline-block; margin-bottom: 0.5rem; }
+		.resource>code {
+			display: block;
+			background-color: #eff0f1;
+			color: #393318;
+			padding: 5px;
+			font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, sans-serif;
+			white-space: nowrap;
+			overflow-x: auto;
+		}
+		form { margin-bottom: 1rem }
+		.form-group { padding-bottom: 1rem }
+		label { display: block }
+	</style>
+</head>
+
+<body>
+	<h1>SERVERLESS-FULLSTACK</h1>
+	<p>Welcome to your AWS serverless application. This example application has several resources configured for you to
+		explore.
+	</p>
+	<section class="resources">
+		<h2>Resources</h2>
+		<section class="resource">
+			<h3><a class="resource-example-link" href="/env">GET /env</a></h3>
+			<p> &nbsp;Get a dump of the env variables.</p>
+			<code>curl 0.0.0.0:8080/users -H 'accept: application/json'</code>
+		</section>
+		<section class="resource">
+			<h3><a class="resource-example-link" href="/db-check">GET /db-check</a></h3>
+			<p> &nbsp;Checks if the database is ready</p>
+			<code>curl 0.0.0.0:8080/db-check</code>
+		</section>
+		<section class="resource">
+			<h3>POST /files/:id</h3>
+			<p> &nbsp;Uploads a file.</p>
+			<code>curl 0.0.0.0:8080/files/tmp.jpg --form file=@image.jpg</code>
+		</section>
+		<section class="resource">
+			<h3><a class="resource-example-link" href="/files/__ping__">GET /files/:id</a></h3>
+			<p> &nbsp;Returns a file</p>
+			<code>curl 0.0.0.0:8080/files/__ping__</code>
+		</section>
+		<section class="resource">
+			<h3><a class="resource-example-link" href="/files/__ping__/meta">GET /files/:id/meta</a></h3>
+			<p> &nbsp;Returns a file's metadata</p>
+			<code>curl 0.0.0.0:8080/files/__ping__/meta -H 'accept: application/json'</code>
+		</section>
+	</section>
+	<section class="form">
+		<h2>Form</h2>
+		<p>Experiment with uploading a file via the form below to file id = '__test__'.</p>
+		<form action="/files/__test__" method="post" enctype="multipart/form-data">
+			<div class="form-group">
+				<input aria-label="File picker" type="file" name="file" id="file">
+			</div>
+			<input type="submit">
+		</form>
+	</section>
+</body>
+
+</html>

@@ -8,4 +8,4 @@ s3_prefix = "serverless-fullstack2"
 region = "us-east-1"
 confirm_changeset = false
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "DbName=\"public\" DbUser=\"admin\" DbPassword=\"supercrazysecretpassword\""
+parameter_overrides = "CookieSecret=\"serverlesssupersecretcookiesecret\" DbName=\"public\" DbUser=\"admin\" DbPassword=\"supercrazysecretpassword\""
