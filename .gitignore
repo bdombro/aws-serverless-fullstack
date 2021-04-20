@@ -4,3 +4,4 @@ npm-debug.log
 .env
 .history
 .aws-sam
+fileStorage

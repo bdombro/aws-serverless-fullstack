@@ -16,9 +16,10 @@ Parameters:
     Default: supercrazysecretpassword
 
 Resources:
-  #################
+
+  #########################
   # DB
-  #################
+  #########################
   DbCluster:
     Type: AWS::RDS::DBCluster
     Properties:
@@ -45,6 +46,21 @@ Resources:
             "username": "${DbUser}",
             "password": "${DbPassword}"
           }
+  
+
+  #########################
+  # File Storage
+  #########################
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    # DependsOn: BucketPermission
+    # Properties:
+      # BucketName: !Ref BucketName
+
+  
+  #########################
+  # IAM Role
+  #########################
   LambdaRole: 
     Type: AWS::IAM::Role
     Properties:
@@ -56,26 +72,20 @@ Resources:
             Service: [lambda.amazonaws.com]
           Action: [sts:AssumeRole]
       Path: "/"
-      Policies: 
+      Policies:
         - PolicyName: LambdaToCloudWatchLogs
           PolicyDocument: 
             Version: 2012-10-17
             Statement: 
               - Effect: Allow
-                Action: [logs:*]
+                Action: logs:*
                 Resource: [arn:aws:logs:*:*:*]
         - PolicyName: LambdaToRDSAuroraServerless
           PolicyDocument: 
             Version: 2012-10-17
             Statement: 
               - Effect: Allow
-                Action: 
-                  - rds-data:ExecuteSql
-                  - rds-data:ExecuteStatement
-                  - rds-data:BatchExecuteStatement
-                  - rds-data:BeginTransaction
-                  - rds-data:RollbackTransaction
-                  - rds-data:CommitTransaction
+                Action: rds-data:*
                 Resource: 
                   - !Sub arn:aws:rds:*:*:cluster:${DbCluster}
                   - !Sub arn:aws:rds:*:*:cluster:${DbCluster}:*
@@ -88,21 +98,29 @@ Resources:
                 Resource:
                   - !Ref DbSecret
                   - !Sub ${DbSecret}:*
+        - PolicyName: LambdaToS3
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: !Sub arn:aws:s3:::${S3Bucket}/*
 
-  #############
-  # API
-  #############
+  
+  
+  #########################
+  # Public API
+  #########################
   ApiGateway:
     Type: AWS::Serverless::HttpApi
   ApiLambda:
     Type: AWS::Serverless::Function
     Properties:
-      # CodeUri: ./dist
-      # Handler: main.handler
       Handler: src/lambda.handler
-      MemorySize: 128
+      MemorySize: 256
       Runtime: nodejs14.x
-      Timeout: 300
+      Timeout: 30
+      # Tracing: Active # TODO: Get this working
       Events:
         ProxyApiRoot:
           Type: HttpApi
@@ -110,36 +128,36 @@ Resources:
             ApiId: !Ref ApiGateway
       Environment:
         Variables:
+          NODE_ENV: production
           dbName: !Ref DbName
           dbArn: !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DbCluster}
           dbSecretArn: !Ref DbSecret
-      Role: 
-        Fn::GetAtt: [LambdaRole, Arn]
+          s3Bucket: !Ref S3Bucket
+      Role: !GetAtt LambdaRole.Arn
 
+      
 Outputs:
-  LambdaFunctionConsoleUrl:
-    Description: Console URL for the Lambda Function.
-    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/${ApiLambda}
-
-  ApiGatewayApiConsoleUrl:
-    Description: Console URL for the API Gateway API's Stage.
-    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/apis/${ApiGateway}/stages/prod
+  CloudFormation:
+    Description: Console URL for the Stack.
+    Value: https://console.aws.amazon.com/cloudformation/home
 
   ApiUrl:
     Description: Invoke URL for your API. Clicking this link will perform a GET request
       on the root resource of your API.
     Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/
 
-  LambdaFunctionName:
-    Description: Name of the Api Lambda Function
-    Value: !Ref ApiLambda
-
-  DatabaseName:
+  DbName:
+    Description: Database Name
     Value: !Ref DbName
-    Description: Aurora Serverless MySQL Database
-  SecretsArn:
-    Value: !Ref DbSecret
-    Description: AWS Secrets Arn 
-  DBClusterArn:
+  
+  DbArn:
+    Description: Database ARN
     Value: !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DbCluster}
-    Description: AWS Secrets Arn
+
+  DbName:
+    Description: Database Secret ARN
+    Value: !Ref DbSecret
+  
+  S3Bucket:
+    Description: S3 Storage Bucket
+    Value: !Ref S3Bucket

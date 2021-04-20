@@ -2,12 +2,13 @@
   "name": "@bdombro/serverless-fullstack",
   "version": "2.1.1",
   "description": "Example application for running a Node API app on AWS Lambda using Amazon API Gateway.",
-  "main": "server.js",
+  "main": "src/server.js",
   "license": "ISC",
   "scripts": {
-    "start": "node server.js",
-    "stack:build": "sam build",
-    "stack:deploy": "sam deploy"
+    "build": "tsc && sam build && tsc -b --clean",
+    "deploy": "sam deploy",
+    "dev": "dbName=public dbHost=0.0.0.0 dbUser=admin dbPassword=supercrazysecretpassword ts-node-dev --transpile-only src/server.ts",
+    "dev:mysql": "docker run -it --rm --name serverless-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=supercrazysecretpassword -e MYSQL_DATABASE=public -e MYSQL_USER=admin -e MYSQL_PASSWORD=supercrazysecretpassword mysql:5.7"
   },
   "files": [
     "src"
@@ -16,6 +17,17 @@
     "aws-lambda-fastify": "^1.4.4",
     "aws-sdk": "^2.888.0",
     "data-api-client": "^1.2.0",
-    "fastify": "^3.14.2"
+    "fastify": "^3.14.2",
+    "fastify-compress": "^3.4.1",
+    "fastify-cookie": "^5.1.0",
+    "fastify-file-upload": "^3.0.0",
+    "fastify-helmet": "^5.1.0",
+    "fastify-static": "^3.3.1",
+    "mysql2": "^2.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.41",
+    "ts-node-dev": "^1.1.6",
+    "typescript": "^4.2.4"
   }
 }

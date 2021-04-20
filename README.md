@@ -14,6 +14,8 @@ This guide assumes you have already
 1. Deploy to AWS using `sam build && sam deploy`
 1. View your stacks online at [CloudFormation](https://console.aws.amazon.com/cloudformation/home), or open your API at the URL from the deploy output.
 
+To delete your stack, run `aws cloudformation delete-stack --stack-name (name of your stack) --region us-east-1`
+
 ## References
 
 - https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html
