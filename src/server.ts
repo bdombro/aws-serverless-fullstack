@@ -1,12 +1,7 @@
-import * as fs from 'fs'
-
 import app from './app'
+import env from './lib/env'
 
-const
-	address = process.env.ADDRESS || '0.0.0.0'
-	,port = process.env.PORT || 3000
-
-app.listen(port, address, (err, address) => {
+app.listen(env.PORT, env.ADDRESS, (err, address) => {
 	if (err) throw err
 	app.log.info(`server listening on ${address}`)
 })

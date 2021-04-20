@@ -14,10 +14,10 @@ Parameters:
     NoEcho: true
     Type: String
     Default: supercrazysecretpassword
-  CookieSecret:
+  AuthSecret:
     NoEcho: true
     Type: String
-    Default: serverlesssupersecretcookiesecret
+    Default: serverlesssupersecretauthsecret
 
 Resources:
 
@@ -133,7 +133,7 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: production
-          cookieSecret: !Ref CookieSecret
+          authSecret: !Ref AuthSecret
           dbName: !Ref DbName
           dbArn: !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DbCluster}
           dbSecretArn: !Ref DbSecret

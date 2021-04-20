@@ -4,7 +4,6 @@
 
 import env from './env'
 
-
 const client = env.isProd ? createRdsClient() : createLocalClient()
 
 export default {
