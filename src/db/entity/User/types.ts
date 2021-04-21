@@ -1,5 +1,3 @@
-import { getEnumValues } from '../../../lib/enums'
-
 export interface UserType {
   id: string
   email: string
@@ -27,11 +25,11 @@ export enum UserRole {
   EDITOR = 1,
   AUTHOR = 2
 }
-export const UserRoleSet = new Set(getEnumValues(UserRole))
+export const UserRoleSet = new Set(Enum.getEnumValues(UserRole))
 
 export enum UserStatus {
   PENDING = 0,
   ACTIVE = 1,
   BANNED = 2,
 }
-export const UserStatusSet = new Set(getEnumValues(UserStatus))
+export const UserStatusSet = new Set(Enum.getEnumValues(UserStatus))

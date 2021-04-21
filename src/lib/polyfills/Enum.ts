@@ -1,3 +1,19 @@
+export {}
+
+declare global {
+	// eslint-disable-next-line no-var
+	var Enum: {
+		getEnumValues: any
+		getEnumFromClassInstance: any
+	}
+}
+
+
+globalThis.Enum = {
+	getEnumValues,
+	getEnumFromClassInstance,
+}
+
 /**
  * Gets enum values from enum
  * 
@@ -5,7 +21,7 @@
  * 
  * @param enum0 Incoming enum
  */
-export function getEnumValues(enumFrom: Record<string, any>) {
+function getEnumValues(enumFrom: Record<string, any>) {
 	const raw = Object.values(enumFrom)
 	return raw.slice(raw.length/2)
 }
@@ -13,6 +29,6 @@ export function getEnumValues(enumFrom: Record<string, any>) {
 /**
  * Creates an enum-like object from a class instance
  */
-export function getEnumFromClassInstance<T>(classInstance: T) {
+function getEnumFromClassInstance<T>(classInstance: T) {
 	return Object.fromEntries(Object.keys(classInstance).map(k => [k,k])) as Record<keyof T, keyof T>
 }

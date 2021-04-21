@@ -1,7 +1,5 @@
 import type { FastifyRequest } from 'fastify'
 
-import { difference } from './arrays'
-
 export class NotFoundError extends Error {
 	type = 'NotFound'
 	note = 'The article you seek doth not exist'
@@ -234,7 +232,7 @@ export function assertValidSet<T>(obj: T, attrAssertions: ValidationErrorType<T>
 }
 
 export function assertAttrsWithin(given: Record<string, any>, expected: Record<string, any>,) {
-	const randos = difference(Object.keys(given), Object.keys(expected))
+	const randos = Array.difference(Object.keys(given), Object.keys(expected))
 
 	if (randos.length) throw new ValidationErrorSet(
 		given,

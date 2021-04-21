@@ -15,7 +15,6 @@ import { getManager } from 'typeorm'
 import { UserEntity, UserStatus } from './db'
 import env from './lib/env'
 import fileStorage from './lib/fileStorage'
-import { pick } from './lib/objects'
 import { ForbiddenError, FormValidationErrorSet, NotFoundError, RequiredError, ValidationErrorSet } from './lib/validation'
 
 declare module 'fastify-jwt' {
@@ -120,7 +119,7 @@ app.get(`${prefix}/files/:id/meta`, async (req, reply) => {
 	const {id} = req.params as Record<string, string>
 	try {
 		const file = await fileStorage.get(id)
-		reply.send(pick(file, ['contentType', 'createdAt']))
+		reply.send(Object.pick(file, ['contentType', 'createdAt']))
 	} catch(err) {
 		if (err.code === 'ENOENT')
 			throw new NotFoundError()

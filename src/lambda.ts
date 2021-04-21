@@ -1,6 +1,8 @@
-const awsLambdaFastify = require('aws-lambda-fastify')
+import './lib/polyfills'
 
 import app from './app'
+
+const awsLambdaFastify = require('aws-lambda-fastify')
 
 exports.handler = awsLambdaFastify(app, {
 	// Set all contenttyps to be treated as binary, so that gzip compression works.

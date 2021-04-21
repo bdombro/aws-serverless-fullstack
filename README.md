@@ -147,10 +147,8 @@ The `synchronize` mode is more convenient, but is obviously too dangerous for a 
 
 To generate a migration file for what's currently in code vs. database:
 ```bash
-npm run typeorm -- migration:generate -n <name of migration>
+npm run typeorm:migration-gen -- NameOfSnapshot
 ```
-> Pro-tip: If you've been running in `synchronize` mode, the database will already be in sync with the code. Therefore, you'll need to reset the database before generating the migration file.
-
 
 ## Deploying to AWS as Cloudformation Stack 🏁
 

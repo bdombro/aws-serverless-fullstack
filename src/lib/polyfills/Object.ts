@@ -2,19 +2,25 @@
  * Polyfills for object
  */
 
-// @ts-ignore: pick overload mismatch
-export function pick<T extends Record<string, any>, K extends (keyof T)> (obj: T, keys: readonly K[]): Pick<T, K>
-export function pick<T extends Record<string, any>, K extends (keyof T)> (obj: T, keys: K[]): Pick<T, K> {
-	const res: Partial<Pick<T, K>> = {}
+export {}
+
+declare global {
+	interface ObjectConstructor {
+		pick<T extends Record<string, any>, K extends (keyof T)> (obj: T, keys: readonly K[] | K[]): Pick<T, K>
+		omit<T extends Record<string, any>, K extends (keyof T)>(obj: T, keys: readonly K[] | K[]): Omit<T, K>
+		equals(foo: any, bar: any): boolean
+	}
+}
+
+Object.pick = function (obj, keys) {
+	const res: any = {}
 	keys?.forEach(k => {
 		if (k in obj) res[k] = obj[k]
 	})
-	return res as Pick<T, K>
+	return res
 }
 
-// @ts-ignore: omit overload mismatch
-export function omit<T extends Record<string, any>, K extends (keyof T)> (obj: T, keys: readonly K[]): Omit<T, K>
-export function omit<T extends Record<string, any>, K extends (keyof T)> (obj: T, keys: K[]): Omit<T, K> {
+Object.omit = function (obj, keys) {
 	const res = Object.assign({}, obj)
 	keys?.forEach(k => {
 		if (k in obj) delete res[k]
@@ -22,12 +28,11 @@ export function omit<T extends Record<string, any>, K extends (keyof T)> (obj: T
 	return res
 }
 
-const has = Object.prototype.hasOwnProperty
-
 /**
  * Copied from npm/depqual
  */
-export function equals(foo: any, bar: any): boolean {
+const has = Object.prototype.hasOwnProperty
+Object.equals = function (foo, bar) {
 	let ctor, len, tmp
 	if (foo === bar) return true
 
@@ -37,7 +42,7 @@ export function equals(foo: any, bar: any): boolean {
 
 		if (ctor === Array) {
 			if ((len=foo.length) === bar.length) {
-				while (len-- && equals(foo[len], bar[len]));
+				while (len-- && Object.equals(foo[len], bar[len]));
 			}
 			return len === -1
 		}
@@ -67,7 +72,7 @@ export function equals(foo: any, bar: any): boolean {
 					tmp = find(bar, tmp)
 					if (!tmp) return false
 				}
-				if (!equals(len[1], bar.get(tmp))) {
+				if (!Object.equals(len[1], bar.get(tmp))) {
 					return false
 				}
 			}
@@ -95,7 +100,7 @@ export function equals(foo: any, bar: any): boolean {
 			len = 0
 			for (ctor in foo) {
 				if (has.call(foo, ctor) && ++len && !has.call(bar, ctor)) return false
-				if (!(ctor in bar) || !equals(foo[ctor], bar[ctor])) return false
+				if (!(ctor in bar) || !Object.equals(foo[ctor], bar[ctor])) return false
 			}
 			return Object.keys(bar).length === len
 		}
@@ -105,7 +110,7 @@ export function equals(foo: any, bar: any): boolean {
 
 	function find(iter: any, tar: any, key?: any) {
 		for (key of iter.keys()) {
-			if (equals(key, tar)) return key
+			if (Object.equals(key, tar)) return key
 		}
 	}
 }

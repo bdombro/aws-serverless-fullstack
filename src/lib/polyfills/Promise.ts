@@ -1,6 +1,17 @@
 /**
- * Polyfills for async related tasks
+ * Extensions for Promise
  */
+
+export {}
+
+declare global {
+	interface PromiseConstructor {
+		callWithRetry: <T extends any>(callback: () => T, maxTries: number) => Promise<T>
+	}
+	// interface Promise<T> {
+	// 	foo: 'bar'
+	// }
+}
 
 /**
  * Call a callback repeatedly until it completes without error
@@ -8,7 +19,7 @@
  * @param maxTries - the maximum number of tries
  * @returns 
  */
-export async function callWithRetry<T extends any>(callback: () => T, maxTries = 4): Promise<T> {
+Promise.callWithRetry = async function callWithRetry(callback, maxTries = 4) {
 	const callbackPromise = async () => callback() // promisify callback
 	let lastError = new Error()
 	for (let tryCount = 0; tryCount < maxTries; tryCount++) {
