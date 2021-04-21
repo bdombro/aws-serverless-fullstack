@@ -13,11 +13,9 @@
     "importsNotUsedAsValues": "error",
     "allowUnreachableCode": true,
     "lib": ["ES2019", "DOM"],
-    "paths": {
-      "~/*": [
-        "src/*"
-      ]
-    }
+		"emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false
   },
   "include": ["src"],
   "exclude": ["node_modules"],

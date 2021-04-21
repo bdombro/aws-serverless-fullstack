@@ -1,14 +1,19 @@
 module.exports = {
-	'parser': '@typescript-eslint/parser',
-	'plugins': [
+	parser: '@typescript-eslint/parser',
+	plugins: [
 		'@typescript-eslint',
 		'simple-import-sort'
 	],
-	'extends': [
+	extends: [
 		'eslint:recommended',
 		'plugin:@typescript-eslint/recommended'
 	],
-	'rules': {
+	env: {
+		browser: true,
+		amd: true,
+		node: true,
+	},
+	rules: {
 		'indent': ['error', 'tab'],
 		'semi': ['error','never'],
 		'quotes': ['error','single'],

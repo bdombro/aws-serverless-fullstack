@@ -7,9 +7,9 @@ const pe = process.env as Record<string, string>
 
 const isProd = process.env.NODE_ENV === 'production'
 
-const lambdaVars = ['authSecret', 'dbName', 'dbArn', 'dbSecretArn', 's3Bucket'] as const
+const lambdaVars = ['jwtSecret', 'dbName', 'dbArn', 'dbSecretArn', 's3Bucket', 'region'] as const
 const lambdaEnv = pick(pe, lambdaVars)
-const localVars = ['ADDRESS', 'PORT', 'authSecret', 'dbName', 'dbHost', 'dbUser', 'dbPassword'] as const
+const localVars = ['jwtSecret'] as const
 const localEnv = pick(pe, localVars)
 
 const currentVars = isProd ? lambdaVars : localVars

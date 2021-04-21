@@ -1,4 +1,4 @@
-# AWS-SERVERLESS-FULLSTACK
+<h1> ☠️ AWS-SERVERLESS-FULLSTACK ☠️</h1>
 
 ...is a template to create a low-management, autoscaling NodeJS api + database on AWS
 
@@ -9,18 +9,150 @@ What makes it cool:
 1. Run locally, AWS, or anywhere with generic file and db connectors
 1. All Javascript/Typescript
 1. Uses Fastify framework, which is mucho faster than Express
-1. DB ORM and schema management with Typeorm
-1. Type-strict
+2. DB ORM and schema management via Typeorm
+3. Type-strict
 
-## Running locally
+<h2> Table of Contents 🌍</h2>
 
-1. Installed docker, node v14
-1. `npm i`
-1. `npm run dev:mysql`
-1. `npm run dev`
+- [Running locally 🏎](#running-locally-)
+- [API ☁](#api-)
+- [DB Schema Management 🗂](#db-schema-management-)
+- [Deploying to AWS as Cloudformation Stack 🏁](#deploying-to-aws-as-cloudformation-stack-)
+- [Known Issues 🐞](#known-issues-)
+- [References and Special Thanks 😘](#references-and-special-thanks-)
+
+## Running locally 🏎
+
+To run locally, ensure you have docker running and node v14.
+
+```bash
+npm i
+npm run db # Start the database in Docker as a daemon
+npm run dev # Start the API on https://0.0.0.0:3000
+```
+
+## API ☁
+
+<h4>GET /</h4>
+
+Serves static website in src/html
+
+```bash
+curl https://0.0.0.0:3000
+```
+
+<h4>GET /api/dbtime</h4>
+
+Gets the current time from DB
+
+```bash
+curl https://0.0.0.0:3000/api/dbtime
+```
+
+<h4>POST /api/files/:id</h4>
+
+Uploads a file
+
+```bash
+curl -X POST https://0.0.0.0:3000/api/files/1234 --form file=@image.jpg
+```
+
+<h4>GET /api/files/:id</h4>
+
+Returns a file
+
+```bash
+curl https://0.0.0.0:3000/api/files/1234
+```
+
+<h4>GET /api/files/:id/meta</h4>
+
+Returns a file's metadata
+
+```bash
+curl https://0.0.0.0:3000/api/files/1234/meta -H 'accept: application/json'
+```
+
+<h4>POST /api/users</h4>
+
+Creates a user
+
+```bash
+curl -X POST \
+  --url https://0.0.0.0:3000/api/users \
+  --header 'Content-Type: application/json' \
+  --data '{
+		"email": "editor3@example.com",
+		"roles": [1],
+		"givenName": "Sally",
+		"surname": "Editor",
+		"password": "Yousuck8"
+	}'
+```
+
+<h4>GET /api/users</h4>
+
+Gets users
+
+```bash
+curl https://0.0.0.0:3000/api/users
+```
+
+## DB Schema Management 🗂
+
+You needs in the database change over time, and it's crazy error-prone to do it manually. Have you ever added a column to a dev environment just to forget to add it to production? This can easily take down your whole app. There must be a better way, right? Yes, thanks to "migration" tooling.
+
+> A migration is just a single file with sql queries to update a database schema and apply new changes to an existing database.
+
+Another part challenge/frustration for developers is avoiding mistakes when accessing the database. Instead of manually updating every SQL query string that may reference the column you just changes, wouldn't it be nice if your tooling did that automatically? That's where Object-Relational-Mappers (ORMs) help. ORMs allow your code to access the database without writing SQL strings.
+
+> ORMs provide abstracted interfaces to the database, which allow you to describe the database schema in one place and have it apply globally.
+
+|_Object_| A table in the database|
+|_Relational_| A relationship between tables (i.e. Users have Blog Posts))|
+|_Mapping_| Glue code that translates (aka _maps_) coding features to SQL query strings based on configuration (aka _model_)|
+
+For example, this snippet models a user table, gets a user object from the database, update a column, then save it.
+
+```typescript
+@Entity()
+export default class UserEntity extends BaseEntity {
+	@PrimaryColumn('varchar', {length: 30})
+	id: string
+
+	@Column('varchar', {unique: true, length: 30}) 
+	email: string
+
+	@Column('varchar', {length: 30}) 
+	name: string
+}
+
+const user = await UserEntity.findOne({ where: { email: 'foo@bar.com' } })
+user.name = 'Shirley'
+await user.save()
+```
+
+That code actually works, too! It and this project use an ORM called [TypeORM](typeorm.io). Additionally, TypeORM provides type-safety and schema migration tooling (!!!).
+
+Thanks to TypeORM's Typescript features, `user.phone = '+1222222222'` will throw an error, because there is no phoneNumber field in the model.
+
+> But whatabout migrations???
+
+TypeORM has two workflows for database schema management: `synchronize` and `migration`.
+
+|_synchronize_|TypeORM will immediately and greedily generate and apply SQL migrations on the fly. So if you changed the name of column in your code, TypeORM will drop the old column and create a new one, destroying any data that was in the old column.|
+|_migration_|You manage the migrations in code, and they are ran automatically.|
+
+The `synchronize` mode is more convenient, but is obviously too dangerous for a published application. Therefore, this application uses `synchronize` for local development and `migration` for production. __It's up to you as a developer to ensure that you create and test the needed migration files before you deploy(!)__. Luckily for you, TypeORM can to generate migration files for you, and these are usually good-enough.
+
+To generate a migration file for what's currently in code vs. database:
+```bash
+npm run typeorm -- migration:generate -n <name of migration>
+```
+> Pro-tip: If you've been running in `synchronize` mode, the database will already be in sync with the code. Therefore, you'll need to reset the database before generating the migration file.
 
 
-## Deploying to AWS as Cloudformation Stack
+## Deploying to AWS as Cloudformation Stack 🏁
 
 Deploy assumes you have already
 - [set up an AWS account](http://docs.aws.amazon.com/AmazonSimpleDB/latest/DeveloperGuide/AboutAWSAccounts.html)
@@ -34,25 +166,18 @@ Deploy assumes you have already
 
 To delete your stack, run `aws cloudformation delete-stack --stack-name (name of your stack) --region us-east-1`
 
-## Known Issues
+## Known Issues 🐞
 
-When configured to sleep, API calls may timeout (28s) before the database finishes waking up. To tolerate this, the web application needs to retry API calls that fail due to database failures. Here is the expected response from the API on failure:
+When configured to sleep, API calls may timeout (28s) before the database finishes waking up. To tolerate this, the web application needs to retry API calls that fail due to database failures. Here is the expected `503` response from the API on failure:
 
 ```json
-{
-  "error": {
-    "type": "InternalServerError",
-    "note": "Communications link failure\n\nThe last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.",
-    "context": {
-      "errorSet": {}
-    }
-  }
-}
+{"message":"Service Unavailable"}
 ```
 
 
-## References
+## References and Special Thanks 😘
 
+- [Typeorm 3rd Party Docs](https://orkhan.gitbook.io/typeorm/)
 - https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html
 - https://github.com/vendia/serverless-express
 - https://github.com/claudiajs/claudia

@@ -31,30 +31,42 @@
 	<section class="resources">
 		<h2>Resources</h2>
 		<section class="resource">
-			<h3><a class="resource-example-link" href="/db-ping">GET /db-ping</a></h3>
-			<p> &nbsp;Checks if the database is ready</p>
-			<code>curl 0.0.0.0:8080/db-ping</code>
+			<h3><a class="resource-example-link" href="/api/dbtime">GET /api/dbtime</a></h3>
+			<p> &nbsp;Gets the current time from DB</p>
+			<code>curl https://0.0.0.0:3000/api/dbtime</code>
 		</section>
 		<section class="resource">
-			<h3>POST /files/:id</h3>
-			<p> &nbsp;Uploads a file.</p>
-			<code>curl 0.0.0.0:8080/files/tmp.jpg --form file=@image.jpg</code>
+			<h3>POST /api/files/:id</h3>
+			<p> &nbsp;Uploads a file</p>
+			<code>curl -X POST https://0.0.0.0:3000/api/files/1234 --form file=@image.jpg</code>
 		</section>
 		<section class="resource">
-			<h3><a class="resource-example-link" href="/files/__ping__">GET /files/:id</a></h3>
+			<h3>GET /api/files/:id</h3>
 			<p> &nbsp;Returns a file</p>
-			<code>curl 0.0.0.0:8080/files/__ping__</code>
+			<code>curl https://0.0.0.0:3000/api/files/1234</code>
 		</section>
 		<section class="resource">
-			<h3><a class="resource-example-link" href="/files/__ping__/meta">GET /files/:id/meta</a></h3>
+			<h3>GET /api/files/:id/meta</h3>
 			<p> &nbsp;Returns a file's metadata</p>
-			<code>curl 0.0.0.0:8080/files/__ping__/meta -H 'accept: application/json'</code>
+			<code>curl https://0.0.0.0:3000/api/files/1234/meta -H 'accept: application/json'</code>
+		</section>
+		<section class="resource">
+			<h3>POST /api/users</h3>
+			<p> &nbsp;Creates a user</p>
+			<code>
+				curl -X POST --url https://0.0.0.0:3000/api/users --header 'Content-Type: application/json' --data '{"email": "editor3@example.com","roles": [1],"givenName": "Sally","surname": "Editor","password": "Password88"}'
+			</code>
+		</section>
+		<section class="resource">
+			<h3><a class="resource-example-link" href="/api/users">GET /api/users</a></h3>
+			<p> &nbsp;Gets users</p>
+			<code>curl https://0.0.0.0:3000/api/users</code>
 		</section>
 	</section>
 	<section class="form">
 		<h2>Form</h2>
 		<p>Experiment with uploading a file via the form below to file id = '__test__'.</p>
-		<form action="/files/__test__" method="post" enctype="multipart/form-data">
+		<form action="/api/files/__test__" method="post" enctype="multipart/form-data">
 			<div class="form-group">
 				<input aria-label="File picker" type="file" name="file" id="file">
 			</div>

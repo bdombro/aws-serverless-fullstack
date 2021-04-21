@@ -1,7 +1,6 @@
 import app from './app'
-import env from './lib/env'
 
-app.listen(env.PORT, env.ADDRESS, (err, address) => {
+app.listen(process.env.PORT || 3000, process.env.ADDRESS || '0.0.0.0', (err, address) => {
 	if (err) throw err
 	app.log.info(`server listening on ${address}`)
 })
