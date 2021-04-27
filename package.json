@@ -6,15 +6,15 @@
   "license": "ISC",
   "scripts": {
     "build": "npm run lint && tsc && sam build && tsc -b --clean",
-		"start": "jwtSecret=secret ts-node src/server.ts",
+    "start": "jwtSecret=secret ts-node src/server.ts",
     "dev": "jwtSecret=secret ts-node-dev --transpile-only src/server.ts",
-		"deploy": "sam deploy",
-    "db": "docker run -d --rm --name serverless-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=public mysql:5.7",
+    "deploy": "sam deploy",
+    "db": "docker run -d --name serverless-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=public mysql:5.7",
     "db:seed": "ts-node --require ./src/lib/polyfills src/db/seed.ts",
     "lint": "eslint --cache --ext .ts,.tsx src",
     "logs": "sam logs -n ApiLambda --stack-name serverless-fullstack2",
     "typeorm": "ts-node --require ./src/lib/polyfills ./node_modules/typeorm/cli.js",
-		"typeorm:migration-gen": "npm run typeorm -- schema:drop && npm run typeorm -- migration:run && npm run typeorm -- migration:generate -n "
+    "typeorm:migration-gen": "npm run typeorm -- schema:drop && npm run typeorm -- migration:run && npm run typeorm -- migration:generate -n "
   },
   "files": [
     "src"
