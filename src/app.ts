@@ -1,5 +1,4 @@
 import 'reflect-metadata'
-import './lib/orm'
 
 import fastify from 'fastify'
 import compressPlugin from 'fastify-compress'
@@ -13,6 +12,7 @@ import * as path from 'path'
 import { getManager } from 'typeorm'
 
 import { UserEntity, UserStatus } from './db'
+import createConnection from './db/createConnection'
 import env from './lib/env'
 import fileStorage from './lib/fileStorage'
 import { ForbiddenError, FormValidationErrorSet, NotFoundError, RequiredError, ValidationErrorSet } from './lib/validation'
@@ -22,7 +22,7 @@ declare module 'fastify-jwt' {
 }
 
 const 
-	prefix = '/api'
+	apiPrefix = '/api'
 	,htmlPath = path.join(__dirname, '/html')
 	,notFoundHtml = fs.readFileSync(path.join(htmlPath, '/not-found.html'))
 	,app = fastify({
@@ -41,7 +41,7 @@ const
 // Plugins
 ///////////////////////////////
 app.register(helmetPlugin, { 
-	prefix,
+	prefix: apiPrefix,
 	contentSecurityPolicy: {
 		directives: {
 			...helmet.contentSecurityPolicy.getDefaultDirectives(),
@@ -55,6 +55,7 @@ app.register(staticPlugin, { root: htmlPath })
 app.register(jwtPlugin, { secret: env.jwtSecret, verify: {maxAge: '30d'}})
 
 
+
 ///////////////////////////////
 // Authorization
 ///////////////////////////////
@@ -62,7 +63,7 @@ app.addHook('onRequest', async (req, reply) => {
 	try {await req.jwtVerify()}
 	catch (err) {req.user = { id: '', roles: [], createdAt: 0 }}
 })
-app.post(`${prefix}/auth/login`, async (req, reply) => {
+app.post(`${apiPrefix}/auth/login`, async (req, reply) => {
 	const {email, password} = req.body as Record<string, string>
 	if (!email)
 		throw new ValidationErrorSet(req.body, {email: new RequiredError('email')})
@@ -74,7 +75,7 @@ app.post(`${prefix}/auth/login`, async (req, reply) => {
 	const token = app.jwt.sign({ id: user.id, roles: user.roles, createdAt: Date.now() })
 	reply.send({token})
 })
-app.post(`${prefix}/auth/refresh`, async (req, reply) => {
+app.post(`${apiPrefix}/auth/refresh`, async (req, reply) => {
 	if (!req.user.id)
 		throw new ValidationErrorSet({}, {Authorization: new RequiredError('authorization')})
 	const user = await UserEntity.findOne({ where: { id: req.user.id } })
@@ -87,14 +88,14 @@ app.post(`${prefix}/auth/refresh`, async (req, reply) => {
 	const token = app.jwt.sign({ id: user.id, roles: user.roles, createdAt: Date.now() })
 	reply.send({token})
 })
-app.get(`${prefix}/auth`, async (req, reply) => {
+app.get(`${apiPrefix}/auth`, async (req, reply) => {
 	reply.send(req.user)
 })
 
 ///////////////////////////////
 // File Storage Demo
 ///////////////////////////////
-app.post(`${prefix}/files/:id`, async (req, reply) => {
+app.post('/files/:id', async (req, reply) => {
 	const 
 		{id} = req.params as Record<string, string>
 		,files = req.raw.files || {}
@@ -104,7 +105,7 @@ app.post(`${prefix}/files/:id`, async (req, reply) => {
 	await fileStorage.put(id, file.data, file.mimetype)
 	reply.code(201).send('success')
 })
-app.get(`${prefix}/files/:id`, async (req, reply) => {
+app.get('/files/:id', async (req, reply) => {
 	const {id} = req.params as Record<string, string>
 	try {
 		const file = await fileStorage.get(id)
@@ -115,7 +116,7 @@ app.get(`${prefix}/files/:id`, async (req, reply) => {
 		throw err
 	}
 })
-app.get(`${prefix}/files/:id/meta`, async (req, reply) => {
+app.get('/files/:id/meta', async (req, reply) => {
 	const {id} = req.params as Record<string, string>
 	try {
 		const file = await fileStorage.get(id)
@@ -130,16 +131,20 @@ app.get(`${prefix}/files/:id/meta`, async (req, reply) => {
 ///////////////////////////////
 // DB Demo
 ///////////////////////////////
-app.get(`${prefix}/dbtime`, async (req, reply) => {
+app.addHook('onRequest', async (req, reply) => {
+	if (req.url.startsWith(apiPrefix))
+		await createConnection()
+})
+app.get(`${apiPrefix}/dbtime`, async (req, reply) => {
 	const time = await getManager().query('SELECT CURRENT_TIME()')
 	reply.send(time[0]['CURRENT_TIME()'])
 })
-app.post(`${prefix}/users`, async (req, reply) => {
+app.post(`${apiPrefix}/users`, async (req, reply) => {
 	const user = await UserEntity.createSafe(req.body as any)
 	user.passwordHash = '*******'
 	reply.send(user)
 })
-app.get(`${prefix}/users`, async (req, reply) => {
+app.get(`${apiPrefix}/users`, async (req, reply) => {
 	const users = await UserEntity.find()
 	users.forEach(u => u.passwordHash = '*******' )
 	reply.send(users)

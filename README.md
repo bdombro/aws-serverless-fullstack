@@ -49,28 +49,28 @@ Gets the current time from DB
 curl https://0.0.0.0:3000/api/dbtime
 ```
 
-<h4>POST /api/files/:id</h4>
+<h4>POST /files/:id</h4>
 
 Uploads a file
 
 ```bash
-curl -X POST https://0.0.0.0:3000/api/files/1234 --form file=@image.jpg
+curl -X POST https://0.0.0.0:3000/files/1234 --form file=@image.jpg
 ```
 
-<h4>GET /api/files/:id</h4>
+<h4>GET /files/:id</h4>
 
 Returns a file
 
 ```bash
-curl https://0.0.0.0:3000/api/files/1234
+curl https://0.0.0.0:3000/files/1234
 ```
 
-<h4>GET /api/files/:id/meta</h4>
+<h4>GET /files/:id/meta</h4>
 
 Returns a file's metadata
 
 ```bash
-curl https://0.0.0.0:3000/api/files/1234/meta -H 'accept: application/json'
+curl https://0.0.0.0:3000/files/1234/meta -H 'accept: application/json'
 ```
 
 <h4>POST /api/users</h4>

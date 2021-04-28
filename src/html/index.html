@@ -36,19 +36,19 @@
 			<code>curl https://0.0.0.0:3000/api/dbtime</code>
 		</section>
 		<section class="resource">
-			<h3>POST /api/files/:id</h3>
+			<h3>POST /files/:id</h3>
 			<p> &nbsp;Uploads a file</p>
-			<code>curl -X POST https://0.0.0.0:3000/api/files/1234 --form file=@image.jpg</code>
+			<code>curl -X POST https://0.0.0.0:3000/files/1234 --form file=@image.jpg</code>
 		</section>
 		<section class="resource">
-			<h3>GET /api/files/:id</h3>
+			<h3>GET /files/:id</h3>
 			<p> &nbsp;Returns a file</p>
-			<code>curl https://0.0.0.0:3000/api/files/1234</code>
+			<code>curl https://0.0.0.0:3000/files/1234</code>
 		</section>
 		<section class="resource">
-			<h3>GET /api/files/:id/meta</h3>
+			<h3>GET /files/:id/meta</h3>
 			<p> &nbsp;Returns a file's metadata</p>
-			<code>curl https://0.0.0.0:3000/api/files/1234/meta -H 'accept: application/json'</code>
+			<code>curl https://0.0.0.0:3000/files/1234/meta -H 'accept: application/json'</code>
 		</section>
 		<section class="resource">
 			<h3>POST /api/users</h3>
@@ -66,7 +66,7 @@
 	<section class="form">
 		<h2>Form</h2>
 		<p>Experiment with uploading a file via the form below to file id = '__test__'.</p>
-		<form action="/api/files/__test__" method="post" enctype="multipart/form-data">
+		<form action="/files/__test__" method="post" enctype="multipart/form-data">
 			<div class="form-group">
 				<input aria-label="File picker" type="file" name="file" id="file">
 			</div>
