@@ -2,7 +2,15 @@ import { Connection, createConnection as _createConnection } from 'typeorm'
 
 import env from '../lib/env'
 
-const createConnection = Function.memoize(async function (): Promise<Connection> {
+export default function(): Promise<Connection> {
+	return createConnectionM()
+		.catch(e => {
+			createConnectionM.bust()
+			throw e
+		})
+}
+
+async function createConnection(): Promise<Connection> {
 	return (env.isProd 
 		? _createConnection({
 			type: 'aurora-data-api',
@@ -22,12 +30,5 @@ const createConnection = Function.memoize(async function (): Promise<Connection>
 	// .catch(() => {
 	// 	throw new Error('DB connect failed.')
 	// })
-})
-
-export default function(): Promise<Connection> {
-	return createConnection()
-		.catch(e => {
-			createConnection.bust()
-			throw e
-		})
 }
+const createConnectionM = Function.memoize(createConnection)
