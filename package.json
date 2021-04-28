@@ -31,7 +31,6 @@
     "cuid": "^2.1.8",
     "data-api-client": "^1.2.0",
     "fastify": "^3.14.2",
-    "fastify-compress": "^3.4.1",
     "fastify-file-upload": "^3.0.0",
     "fastify-helmet": "^5.1.0",
     "fastify-jwt": "^2.4.0",
