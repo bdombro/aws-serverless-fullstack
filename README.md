@@ -162,7 +162,16 @@ Deploy assumes you have already
 1. Deploy to AWS using `sam build && sam deploy`
 1. View your stacks online at [CloudFormation](https://console.aws.amazon.com/cloudformation/home), or open your API at the URL from the deploy output.
 
-To delete your stack, run `aws cloudformation delete-stack --stack-name (name of your stack) --region us-east-1`
+To delete your stack, run:
+```bash
+aws cloudformation delete-stack --stack-name (name of your stack) --region us-east-1
+```
+
+If your stack is tied to CloudFront, you can bust CloudFront caches by:
+```bash
+aws cloudfront list-distributions | grep Id
+aws cloudfront create-invalidation --distribution-id <id> --paths "/static/*"
+```
 
 ## Known Issues 🐞
 

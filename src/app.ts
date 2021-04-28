@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
 import fastify from 'fastify'
-import compressPlugin from 'fastify-compress'
+// import compressPlugin from 'fastify-compress'
 import fileUploadPlugin from 'fastify-file-upload'
 import helmetPlugin from 'fastify-helmet'
 import jwtPlugin from 'fastify-jwt'
@@ -38,6 +38,15 @@ const
 	})
 
 ///////////////////////////////
+// Default Headers
+///////////////////////////////
+app.addHook('onRequest', async (req, reply) => {
+	if (req.method === 'GET' || req.method === 'OPTIONS')
+		reply.headers({'cache-control': 'public, max-age=86400'})
+})
+
+
+///////////////////////////////
 // Plugins
 ///////////////////////////////
 app.register(helmetPlugin, { 
@@ -49,11 +58,10 @@ app.register(helmetPlugin, {
 		},
 	},
 })
-app.register(compressPlugin, { threshold: 800 }) // default = 1024
+// app.register(compressPlugin, { threshold: 800 }) // default = 1024
 app.register(fileUploadPlugin, { limits: { fileSize: 50 * 1024 * 1024 }})
 app.register(staticPlugin, { root: htmlPath })
 app.register(jwtPlugin, { secret: env.jwtSecret, verify: {maxAge: '30d'}})
-
 
 
 ///////////////////////////////
@@ -89,7 +97,9 @@ app.post(`${apiPrefix}/auth/refresh`, async (req, reply) => {
 	reply.send({token})
 })
 app.get(`${apiPrefix}/auth`, async (req, reply) => {
-	reply.send(req.user)
+	reply
+		.headers({'cache-control': 'no-store, max-age=0'})
+		.send(req.user)
 })
 
 ///////////////////////////////
@@ -109,7 +119,10 @@ app.get('/files/:id', async (req, reply) => {
 	const {id} = req.params as Record<string, string>
 	try {
 		const file = await fileStorage.get(id)
-		reply.type(file.contentType).send(file.data)
+		reply
+			// .headers({'cache-control': 'public, max-age=86400'})
+			.type(file.contentType)
+			.send(file.data)
 	} catch(err) {
 		if (err.code === 'ENOENT')
 			throw new NotFoundError()
@@ -132,8 +145,10 @@ app.get('/files/:id/meta', async (req, reply) => {
 // DB Demo
 ///////////////////////////////
 app.addHook('onRequest', async (req, reply) => {
-	if (req.url.startsWith(apiPrefix))
+	if (req.url.startsWith(apiPrefix)) {
+		reply.headers({'cache-control': 'no-store, max-age=0'})
 		await createConnection()
+	}
 })
 app.get(`${apiPrefix}/dbtime`, async (req, reply) => {
 	const time = await getManager().query('SELECT CURRENT_TIME()')
@@ -154,9 +169,16 @@ app.get(`${apiPrefix}/users`, async (req, reply) => {
 ///////////////////////////////
 // Not Found / Error Handling
 ///////////////////////////////
-app.setNotFoundHandler((req, reply) => { reply.type('text/html').send(notFoundHtml) })
+app.setNotFoundHandler((req, reply) => { 
+	reply
+		.code(404)
+		.headers({'cache-control': 'no-store, max-age=0'})
+		.type('text/html')
+		.send(notFoundHtml) 
+})
 app.setErrorHandler(async function errorHandler(error, req, reply) {
 	req.log.error(error as any, error.message)
+	reply.headers({'cache-control': 'no-store, max-age=0'})
 	if (error instanceof NotFoundError)
 		reply.code(404).type('text/html').send(notFoundHtml)
 	else if (error instanceof ForbiddenError)
