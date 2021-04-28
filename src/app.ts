@@ -65,44 +65,6 @@ app.register(jwtPlugin, { secret: env.jwtSecret, verify: {maxAge: '30d'}})
 
 
 ///////////////////////////////
-// Authorization
-///////////////////////////////
-app.addHook('onRequest', async (req, reply) => {
-	try {await req.jwtVerify()}
-	catch (err) {req.user = { id: '', roles: [], createdAt: 0 }}
-})
-app.post(`${apiPrefix}/auth/login`, async (req, reply) => {
-	const {email, password} = req.body as Record<string, string>
-	if (!email)
-		throw new ValidationErrorSet(req.body, {email: new RequiredError('email')})
-	if (!password)
-		throw new ValidationErrorSet(req.body, {password: new RequiredError('password')})
-	const user = await UserEntity.findOne({ where: { email } })
-	if (!(user && await user.comparePassword(password)))
-		throw new FormValidationErrorSet(req.body, 'email and/or password invalid')
-	const token = app.jwt.sign({ id: user.id, roles: user.roles, createdAt: Date.now() })
-	reply.send({token})
-})
-app.post(`${apiPrefix}/auth/refresh`, async (req, reply) => {
-	if (!req.user.id)
-		throw new ValidationErrorSet({}, {Authorization: new RequiredError('authorization')})
-	const user = await UserEntity.findOne({ where: { id: req.user.id } })
-	if (!user) throw new Error('User in token was somehow deleted...?')
-	const
-		passwordChanged = req.user.createdAt < user.passwordUpdatedAt.getTime()
-		,isBanned = user.status === UserStatus.BANNED
-	if (!user || passwordChanged || isBanned) 
-		throw new ForbiddenError()
-	const token = app.jwt.sign({ id: user.id, roles: user.roles, createdAt: Date.now() })
-	reply.send({token})
-})
-app.get(`${apiPrefix}/auth`, async (req, reply) => {
-	reply
-		.headers({'cache-control': 'no-store, max-age=0'})
-		.send(req.user)
-})
-
-///////////////////////////////
 // File Storage Demo
 ///////////////////////////////
 app.post('/files/:id', async (req, reply) => {
@@ -165,6 +127,43 @@ app.get(`${apiPrefix}/users`, async (req, reply) => {
 	reply.send(users)
 })
 
+///////////////////////////////
+// Authorization
+///////////////////////////////
+app.addHook('onRequest', async (req, reply) => {
+	try {await req.jwtVerify()}
+	catch (err) {req.user = { id: '', roles: [], createdAt: 0 }}
+})
+app.post(`${apiPrefix}/auth/login`, async (req, reply) => {
+	const {email, password} = req.body as Record<string, string>
+	if (!email)
+		throw new ValidationErrorSet(req.body, {email: new RequiredError('email')})
+	if (!password)
+		throw new ValidationErrorSet(req.body, {password: new RequiredError('password')})
+	const user = await UserEntity.findOne({ where: { email } })
+	if (!(user && await user.comparePassword(password)))
+		throw new FormValidationErrorSet(req.body, 'email and/or password invalid')
+	const token = app.jwt.sign({ id: user.id, roles: user.roles, createdAt: Date.now() })
+	reply.send({token})
+})
+app.post(`${apiPrefix}/auth/refresh`, async (req, reply) => {
+	if (!req.user.id)
+		throw new ValidationErrorSet({}, {Authorization: new RequiredError('authorization')})
+	const user = await UserEntity.findOne({ where: { id: req.user.id } })
+	if (!user) throw new Error('User in token was somehow deleted...?')
+	const
+		passwordChanged = req.user.createdAt < user.passwordUpdatedAt.getTime()
+		,isBanned = user.status === UserStatus.BANNED
+	if (!user || passwordChanged || isBanned) 
+		throw new ForbiddenError()
+	const token = app.jwt.sign({ id: user.id, roles: user.roles, createdAt: Date.now() })
+	reply.send({token})
+})
+app.get(`${apiPrefix}/auth`, async (req, reply) => {
+	reply
+		.headers({'cache-control': 'no-store, max-age=0'})
+		.send(req.user)
+})
 
 ///////////////////////////////
 // Not Found / Error Handling
