@@ -15,19 +15,15 @@
     "lint": "eslint --cache --ext .ts,.tsx src",
     "logs": "sam logs -n ApiLambda --stack-name serverless-fullstack2",
     "typeorm": "ts-node --require ./src/lib/polyfills ./node_modules/typeorm/cli.js",
-    "typeorm:migration-gen": "npm run typeorm -- schema:drop && npm run typeorm -- migration:run && npm run typeorm -- migration:generate -n "
+    "typeorm:migration-gen": "npm run typeorm -- schema:drop && npm run typeorm -- migration:run && npm run typeorm -- migration:generate -n ",
+    "prepare": "husky install"
   },
   "files": [
     "src"
   ],
-	"imports": {
-		"#hint": "Subpath folder mappings are deprecated after node v16 -- Maybe consider npm/module-alias later",
-		"#src/": "./src/"
-	},
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint && tsc --noEmit"
-    }
+  "imports": {
+    "#hint": "Subpath folder mappings are deprecated after node v16 -- Maybe consider npm/module-alias later",
+    "#src/": "./src/"
   },
   "dependencies": {
     "aws-lambda-fastify": "^1.4.4",
@@ -51,7 +47,7 @@
     "@typescript-eslint/parser": "^4.8.1",
     "eslint": "^7.18.0",
     "eslint-plugin-simple-import-sort": "^6.0.1",
-    "husky": "^4.3.8",
+    "husky": "^6.0.0",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.4"
   },
