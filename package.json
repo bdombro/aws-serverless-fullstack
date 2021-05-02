@@ -20,6 +20,10 @@
   "files": [
     "src"
   ],
+	"imports": {
+		"#hint": "Subpath folder mappings are deprecated after node v16 -- Maybe consider npm/module-alias later",
+		"#src/": "./src/"
+	},
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint && tsc --noEmit"

@@ -33,7 +33,6 @@ function monadic (fn, cache, serializer, arg) {
 
 	let computedValue = cache.get(cacheKey)
 	if (typeof computedValue === 'undefined') {
-		console.log('miss1')
 		computedValue = fn.call(this, arg)
 		cache.set(cacheKey, computedValue)
 	}
@@ -46,7 +45,6 @@ function variadic (fn, cache, serializer) {
 
 	let computedValue = cache.get(cacheKey)
 	if (typeof computedValue === 'undefined') {
-		console.log('miss2')
 		computedValue = fn.apply(this, args)
 		cache.set(cacheKey, computedValue)
 	}
