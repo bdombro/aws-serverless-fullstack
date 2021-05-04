@@ -1,8 +1,6 @@
 import 'reflect-metadata'
 
 import fastify from 'fastify'
-// TODO: Check that compression is working in Cloudfront
-// import compressPlugin from 'fastify-compress'
 import fileUploadPlugin from 'fastify-file-upload'
 import helmetPlugin from 'fastify-helmet'
 import jwtPlugin from 'fastify-jwt'
@@ -58,7 +56,6 @@ app.register(helmetPlugin, {
 		},
 	},
 })
-// app.register(compressPlugin, { threshold: 800 }) // default = 1024
 app.register(fileUploadPlugin, { limits: { fileSize: 50 * 1024 * 1024 }})
 app.register(staticPlugin, { root: htmlPath })
 app.register(jwtPlugin, { secret: env.jwtSecret, verify: {maxAge: '30d'}})

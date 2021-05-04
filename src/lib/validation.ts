@@ -69,11 +69,11 @@ export class ValidationErrorSet<T> extends Error {
 			entity: Object.assign({}, entity),
 			errorSet: errorSet
 		}
-		if (this.context.entity.password) this.context.entity.password = 'REDACTED'
-		if (this.context.entity.passwordCurrent) this.context.entity.passwordCurrent = 'REDACTED'
-		if (this.context.entity.passwordNext) this.context.entity.passwordNext = 'REDACTED'
-		if (this.context.entity.passwordNextConfirm) this.context.entity.passwordNextConfirm = 'REDACTED'
-		if (this.context.entity.passwordHash) this.context.entity.passwordHash = 'REDACTED'
+		if (this.context.entity.password) this.context.entity.password = '********'
+		if (this.context.entity.passwordCurrent) this.context.entity.passwordCurrent = '********'
+		if (this.context.entity.passwordNext) this.context.entity.passwordNext = '********'
+		if (this.context.entity.passwordNextConfirm) this.context.entity.passwordNextConfirm = '********'
+		if (this.context.entity.passwordHash) this.context.entity.passwordHash = '********'
 	}
 }
 
