@@ -20,7 +20,7 @@ export default {
 
 const 
 	s3 = new AWS.S3()
-	,tmpDir = __dirname + '/../../fileStorage/'
+	,tmpDir = __dirname + '/../../.fileStorage/'
 
 async function localPut(key: string, data: any, contentType: string) {
 	const 

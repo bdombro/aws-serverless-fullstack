@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "license": "ISC",
   "scripts": {
-    "build": "npm run lint && tsc && sam build && tsc -b --clean",
+    "build": "npm run lint && tsc && sam build && npm run clean",
+		"clean": "tsc -b --clean",
     "start": "jwtSecret=secret ts-node src/server.ts",
     "dev": "jwtSecret=secret ts-node-dev --transpile-only src/server.ts",
     "deploy": "npm run build && sam deploy",
