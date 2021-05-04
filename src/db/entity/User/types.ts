@@ -1,8 +1,9 @@
 export interface UserType {
   id: string
   email: string
-  roles: UserRole[]
-  status: UserStatus
+	rolesJson: string
+  roles: UserRoleEnum[]
+  status: UserStatusEnum
   password?: string
   passwordHash: string | null
   passwordUpdatedAt: Date
@@ -20,16 +21,16 @@ export type UserCreateRequired = Pick<UserType, 'email' | 'givenName' | 'surname
 export type UserCreate = UserCreateRequired & Partial<UserCreateOptional>
 export type UserUpdate = Partial<UserCreate>
 
-export enum UserRole {
+export enum UserRoleEnum {
   ADMIN = 0,
   EDITOR = 1,
-  AUTHOR = 2
+  AUTHOR = 2,
 }
-export const UserRoleSet = new Set(Enum.getEnumValues(UserRole))
+export const UserRoleSet = new Set(Enum.getEnumValues(UserRoleEnum))
 
-export enum UserStatus {
+export enum UserStatusEnum {
   PENDING = 0,
   ACTIVE = 1,
   BANNED = 2,
 }
-export const UserStatusSet = new Set(Enum.getEnumValues(UserStatus))
+export const UserStatusSet = new Set(Enum.getEnumValues(UserStatusEnum))

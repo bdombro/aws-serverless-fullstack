@@ -8,6 +8,7 @@ declare global {
 	interface ObjectConstructor {
 		pick<T extends Record<string, any>, K extends (keyof T)> (obj: T, keys: readonly K[] | K[]): Pick<T, K>
 		omit<T extends Record<string, any>, K extends (keyof T)>(obj: T, keys: readonly K[] | K[]): Omit<T, K>
+		rmFalseyAttrs<T extends Record<string, any>>(obj: T): T
 		equals(foo: any, bar: any): boolean
 	}
 }
@@ -26,6 +27,10 @@ Object.omit = function (obj, keys) {
 		if (k in obj) delete res[k]
 	})
 	return res
+}
+
+Object.rmFalseyAttrs = function (obj) {
+	return Object.fromEntries(Object.entries(obj).filter(([_, val]) => val)) as any
 }
 
 /**

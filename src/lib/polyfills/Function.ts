@@ -2,8 +2,7 @@
  * Extensions for Function
  */
 
-import type Memoize from './Function.memoize'
-const memoize = require('./Function.memoize')
+import memoize from './Function.memoize'
 
 export {}
 
@@ -15,7 +14,7 @@ declare global {
 		 * @param {*} options - options to be passed in (see https://github.com/caiogondim/fast-memoize.js)
 		 * @returns - the fn wrapped in memoize logic
 		 */
-		memoize: typeof Memoize
+		memoize: typeof memoize
 	}
 }
 

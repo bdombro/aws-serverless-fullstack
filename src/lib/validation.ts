@@ -222,7 +222,7 @@ export function assertValid(
 }
 
 export function validateSet<T>(obj: T, attrAssertions: ValidationErrorType<T>) {
-	const attrAssertionsClean = rmFalseyAttrs(attrAssertions)
+	const attrAssertionsClean = Object.rmFalseyAttrs(attrAssertions)
 	if (Object.keys(attrAssertionsClean).length) return new ValidationErrorSet(obj, attrAssertionsClean)
 }
 
@@ -240,20 +240,8 @@ export function assertAttrsWithin(given: Record<string, any>, expected: Record<s
 	)
 }
 
-
-export function duplicateCheck(array: any[]) {
-	return new Set(array).size !== array.length
-}
-export function deduplicate(array: any[]) {
-	return Array.from(new Set(array))
-}
-
-export function rmFalseyAttrs<T extends Record<string, any>>(obj: T): T {
-	// @ts-ignore: TS get confused with Object.fromEntries
-	return Object.fromEntries(Object.entries(obj).filter(([_, val]) => val))
-}
-
 export const isNullOrUndefined = (arg: any) => arg === undefined || arg === null
+export const isDefinedAndNotNull = (arg: any) => !isNullOrUndefined(arg)
 
 export const isPasswordStrongRegex = new RegExp(
 	`^${[

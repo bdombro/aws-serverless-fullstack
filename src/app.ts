@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 
 import fastify from 'fastify'
+// TODO: Check that compression is working in Cloudfront
 // import compressPlugin from 'fastify-compress'
 import fileUploadPlugin from 'fastify-file-upload'
 import helmetPlugin from 'fastify-helmet'
@@ -11,7 +12,7 @@ import * as helmet from 'helmet'
 import * as path from 'path'
 import { getManager } from 'typeorm'
 
-import { createConnection, UserEntity, UserStatus } from './db'
+import { createConnection, UserEntity, UserStatusEnum } from './db'
 import env from './lib/env'
 import fileStorage from './lib/fileStorage'
 import { ForbiddenError, FormValidationErrorSet, NotFoundError, RequiredError, ValidationErrorSet } from './lib/validation'
@@ -117,12 +118,10 @@ app.get(`${apiPrefix}/dbtime`, async (req, reply) => {
 })
 app.post(`${apiPrefix}/users`, async (req, reply) => {
 	const user = await UserEntity.createSafe(req.body as any)
-	user.passwordHash = '*******'
 	reply.send(user)
 })
 app.get(`${apiPrefix}/users`, async (req, reply) => {
-	const users = await UserEntity.find()
-	users.forEach(u => u.passwordHash = '*******' )
+	const users = (await UserEntity.find())
 	reply.send(users)
 })
 
@@ -142,7 +141,7 @@ app.post(`${apiPrefix}/auth/login`, async (req, reply) => {
 	const user = await UserEntity.findOne({ where: { email } })
 	if (!(user && await user.comparePassword(password)))
 		throw new FormValidationErrorSet(req.body, 'email and/or password invalid')
-	const token = app.jwt.sign({ id: user.id, roles: user.roles, createdAt: Date.now() })
+	const token = app.jwt.sign({ id: user.id, roles: [], createdAt: Date.now() })
 	reply.send({token})
 })
 app.post(`${apiPrefix}/auth/refresh`, async (req, reply) => {
@@ -152,10 +151,10 @@ app.post(`${apiPrefix}/auth/refresh`, async (req, reply) => {
 	if (!user) throw new Error('User in token was somehow deleted...?')
 	const
 		passwordChanged = req.user.createdAt < user.passwordUpdatedAt.getTime()
-		,isBanned = user.status === UserStatus.BANNED
+		,isBanned = user.status === UserStatusEnum.BANNED
 	if (!user || passwordChanged || isBanned) 
 		throw new ForbiddenError()
-	const token = app.jwt.sign({ id: user.id, roles: user.roles, createdAt: Date.now() })
+	const token = app.jwt.sign({ id: user.id, roles: [], createdAt: Date.now() })
 	reply.send({token})
 })
 app.get(`${apiPrefix}/auth`, async (req, reply) => {

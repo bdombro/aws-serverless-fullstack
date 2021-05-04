@@ -4,7 +4,7 @@ import {createConnection} from 'typeorm'
 import {inspect} from 'util'
 
 import UserEntity from './entity'
-import { UserCreate, UserRole } from './types'
+import { UserCreate, UserRoleEnum } from './types'
 
 seedUsers().catch(e => {console.error(inspect(e, false, 4, true))})
 
@@ -39,7 +39,7 @@ async function seedUsers() {
 export const fakeUsers: UserCreate[] = [
 	{
 		email: 'admin@example.com',
-		roles: [UserRole.ADMIN],
+		roles: [UserRoleEnum.ADMIN],
 		password: 'Password8',
 		// status: 4,
 		givenName: 'Sally',
@@ -47,13 +47,13 @@ export const fakeUsers: UserCreate[] = [
 	},
 	{
 		email: 'editor@example.com',
-		roles: [UserRole.EDITOR],
+		roles: [UserRoleEnum.EDITOR],
 		givenName: 'Sally',
 		surname: 'Editor',
 	},
 	{
 		email: 'author@example.com',
-		roles: [UserRole.AUTHOR],
+		roles: [UserRoleEnum.AUTHOR],
 		givenName: 'Sally',
 		surname: 'Author',
 	}

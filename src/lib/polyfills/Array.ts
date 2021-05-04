@@ -19,8 +19,10 @@ declare global {
 		intersection: ArrayDifferenceType
 	}
 	interface Array<T> {
+		duplicateCheck(): boolean
+		deDuplicate(): T[]
 		keyBy(key: string): Record<string, T>
-		subtract(otherArr: T): T
+		subtract(otherArr: T): T[]
 	}
 }
 
@@ -33,6 +35,13 @@ Array.difference = function(...arrays) {
 
 Array.intersection = function (...arrays) {
 	return arrays.reduce((a, b) => b.filter(Set.prototype.has.bind(new Set(a))))
+}
+
+Array.prototype.duplicateCheck = function() {
+	return new Set(this).size !== this.length
+}
+Array.prototype.deDuplicate = function () {
+	return Array.from(new Set(this))
 }
 
 Array.prototype.keyBy = function(key) {

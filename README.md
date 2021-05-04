@@ -173,6 +173,12 @@ aws cloudfront list-distributions | grep Id
 aws cloudfront create-invalidation --distribution-id <id> --paths "/static/*"
 ```
 
+<h4>Connecting to a custom domain</h4>
+
+1. If you haven't, [create an ACM certificate for your domain](https://us-east-1.console.aws.amazon.com/acm/home?region=us-east-1#/). Even if your domain isn't in Route53, it's easy. You'll just need to add a DNS TXT record to your domain to confirm your ownership.
+1. Add your custom domain to [API Gateway](https://us-east-1.console.aws.amazon.com/apigateway/main/publish/domain-names) and connect it to your lambda
+1. Create a CloudFront app with your custom domain name that pulls from your API Gateway. CloudFront basically acts as a reverse proxy with caching.
+
 ## Known Issues 🐞
 
 When configured to sleep, API calls may timeout (28s) before the database finishes waking up. To tolerate this, the web application needs to retry API calls that fail due to database failures. Here is the expected `503` response from the API on failure:

@@ -34,11 +34,8 @@ declare global {
 }
 
 
-Promise.sleep = async function (ms) {
-	return new Promise(function (resolve) {
-		setTimeout(resolve, ms)
-	})
-}
+Promise.sleep = async ms => 
+	new Promise(resolve => setTimeout(resolve, ms))
 
 Promise.callWithRetry = async function callWithRetry(callback, maxTries = 4) {
 	const callbackPromise = async () => callback() // promisify callback

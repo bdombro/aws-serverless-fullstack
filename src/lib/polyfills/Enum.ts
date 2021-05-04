@@ -25,8 +25,12 @@ globalThis.Enum = {
 }
 
 function getEnumValues(enumFrom: Record<string, any>) {
-	const raw = Object.values(enumFrom)
-	return raw.slice(raw.length/2)
+	const vals = Object.entries(enumFrom)
+		// If enum values are number type, entries() will emit it also
+		// as a key, which we don't want so filter them out.
+		.filter(([key]) => isNaN(Number(key)))
+		.map(([_,val]) => val)
+	return vals
 }
 
 function getEnumFromClassInstance<T>(classInstance: T) {
